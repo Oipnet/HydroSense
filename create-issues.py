@@ -93,7 +93,7 @@ def create_issue(issue_data):
         return result
     except Exception as e:
         print(f'  ✗ Failed to create issue "{issue_data["title"]}": {e}')
-        raise
+        return None
 
 
 def main():
@@ -135,14 +135,13 @@ def main():
     fail_count = 0
     
     for issue_data in issues_data['issues']:
-        try:
-            print(f'Creating issue {issue_data["number"]}/24: {issue_data["title"]}')
-            create_issue(issue_data)
+        print(f'Creating issue {issue_data["number"]}/24: {issue_data["title"]}')
+        result = create_issue(issue_data)
+        if result:
             success_count += 1
-            time.sleep(0.5)  # Small delay to avoid rate limiting
-        except Exception:
+        else:
             fail_count += 1
-            print(f'Failed to create issue {issue_data["number"]}')
+        time.sleep(0.5)  # Small delay to avoid rate limiting
     
     print('\n' + '=' * 60)
     print('📊 Summary:')

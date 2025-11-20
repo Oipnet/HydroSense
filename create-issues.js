@@ -123,7 +123,7 @@ async function createIssue(issueData) {
     return result;
   } catch (error) {
     console.error(`  ✗ Failed to create issue "${issueData.title}":`, error.message);
-    throw error;
+    return null;
   }
 }
 
@@ -155,16 +155,15 @@ async function main() {
   let failCount = 0;
 
   for (const issueData of issuesData.issues) {
-    try {
-      console.log(`Creating issue ${issueData.number}/24: ${issueData.title}`);
-      await createIssue(issueData);
+    console.log(`Creating issue ${issueData.number}/24: ${issueData.title}`);
+    const result = await createIssue(issueData);
+    if (result) {
       successCount++;
-      // Small delay to avoid rate limiting
-      await new Promise(resolve => setTimeout(resolve, 500));
-    } catch (error) {
+    } else {
       failCount++;
-      console.error(`Failed to create issue ${issueData.number}`);
     }
+    // Small delay to avoid rate limiting
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
 
   console.log('\n' + '='.repeat(60));

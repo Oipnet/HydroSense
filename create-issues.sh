@@ -81,12 +81,18 @@ create_issue() {
     
     echo "Creating issue $issue_num/24: $title"
     
-    if gh issue create --repo "$REPO" --title "$title" --body "$body" --label "$labels" > /dev/null 2>&1; then
+    # Temporarily disable exit on error for issue creation
+    set +e
+    gh issue create --repo "$REPO" --title "$title" --body "$body" --label "$labels" > /dev/null 2>&1
+    local exit_code=$?
+    set -e
+    
+    if [ $exit_code -eq 0 ]; then
         echo "  ✓ Successfully created"
-        ((SUCCESS_COUNT++))
+        SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
     else
         echo "  ✗ Failed to create"
-        ((FAIL_COUNT++))
+        FAIL_COUNT=$((FAIL_COUNT + 1))
     fi
     
     # Small delay to avoid rate limiting
