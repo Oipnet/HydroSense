@@ -132,8 +132,11 @@ backend/
 │   ├── Entity/                    # Entités Doctrine
 │   │   ├── Reservoir.php         # Gestion des réservoirs
 │   │   ├── Measurement.php       # Mesures (pH, EC, température)
+│   │   ├── JournalEntry.php      # Journal de culture
+│   │   ├── Alert.php             # Système d'alertes
 │   │   └── Sensor.php            # Exemple d'entité API Resource
 │   ├── Repository/               # Repositories Doctrine
+│   ├── Extension/                # Query Extensions (sécurité automatique)
 │   ├── State/                    # Providers & Processors API Platform
 │   ├── Service/                  # Services métier
 │   ├── Dto/                      # Data Transfer Objects
@@ -149,9 +152,10 @@ backend/
 
 Pour une documentation technique complète, consultez le dossier **[`docs/`](./docs/README.md)** qui contient :
 
--   **Import CSV des mesures** : Implémentation complète et guide de test
--   **Architecture State Processor** : Documentation du pattern Provider/Processor
--   **Guides de test** : Exemples curl et HTTPie
+-   **Journal de culture (JournalEntry)** : Système de notes et photos pour les réservoirs ([docs/README-JOURNAL-ENTRY.md](./docs/README-JOURNAL-ENTRY.md))
+-   **Import CSV des mesures** : Implémentation complète et guide de test ([docs/EPIC-2-CSV-IMPORT-IMPLEMENTATION.md](./docs/EPIC-2-CSV-IMPORT-IMPLEMENTATION.md))
+-   **Architecture State Processor** : Documentation du pattern Provider/Processor ([docs/REFACTORING-STATE-PROCESSOR.md](./docs/REFACTORING-STATE-PROCESSOR.md))
+-   **Guides de test** : Exemples PowerShell pour tous les endpoints
 
 ## 🔒 Sécurité et JWT
 

@@ -85,11 +85,12 @@ if ($temp < $cultureProfile->getWaterTempMin() || $temp > $cultureProfile->getWa
 
 La sévérité est calculée en fonction du pourcentage de déviation par rapport à la plage acceptable :
 
-- **INFO** : Déviation < 10% (légère anomalie)
-- **WARN** : Déviation 10-25% (anomalie modérée)
-- **CRITICAL** : Déviation > 25% (anomalie sévère)
+-   **INFO** : Déviation < 10% (légère anomalie)
+-   **WARN** : Déviation 10-25% (anomalie modérée)
+-   **CRITICAL** : Déviation > 25% (anomalie sévère)
 
 **Formule** :
+
 ```
 deviationPercent = (deviation / rangeWidth) * 100
 où deviation = distance en dehors de la plage [min, max]
@@ -102,35 +103,37 @@ où deviation = distance en dehors de la plage [min, max]
 Récupère toutes les alertes de l'utilisateur connecté.
 
 **Filtres disponibles** :
-- `?type=PH_OUT_OF_RANGE` - Filtrer par type d'alerte
-- `?severity=CRITICAL` - Filtrer par sévérité
-- `?resolved=false` - Filtrer les alertes non résolues
-- `?reservoir=/api/reservoirs/1` - Filtrer par réservoir
-- `?createdAt[after]=2025-11-20` - Filtrer par date de création
-- `?order[createdAt]=desc` - Trier par date (desc par défaut)
+
+-   `?type=PH_OUT_OF_RANGE` - Filtrer par type d'alerte
+-   `?severity=CRITICAL` - Filtrer par sévérité
+-   `?resolved=false` - Filtrer les alertes non résolues
+-   `?reservoir=/api/reservoirs/1` - Filtrer par réservoir
+-   `?createdAt[after]=2025-11-20` - Filtrer par date de création
+-   `?order[createdAt]=desc` - Trier par date (desc par défaut)
 
 **Exemple de réponse** :
+
 ```json
 {
-  "hydra:member": [
-    {
-      "@id": "/api/alerts/1",
-      "@type": "Alert",
-      "id": 1,
-      "reservoir": "/api/reservoirs/1",
-      "measurement": "/api/measurements/42",
-      "type": "PH_OUT_OF_RANGE",
-      "severity": "WARN",
-      "message": "pH level 7.50 is outside the recommended range [5.50 - 6.50] for Laitue",
-      "measuredValue": 7.5,
-      "expectedMin": 5.5,
-      "expectedMax": 6.5,
-      "createdAt": "2025-11-20T12:00:00+00:00",
-      "resolvedAt": null,
-      "resolved": false
-    }
-  ],
-  "hydra:totalItems": 1
+    "hydra:member": [
+        {
+            "@id": "/api/alerts/1",
+            "@type": "Alert",
+            "id": 1,
+            "reservoir": "/api/reservoirs/1",
+            "measurement": "/api/measurements/42",
+            "type": "PH_OUT_OF_RANGE",
+            "severity": "WARN",
+            "message": "pH level 7.50 is outside the recommended range [5.50 - 6.50] for Laitue",
+            "measuredValue": 7.5,
+            "expectedMin": 5.5,
+            "expectedMax": 6.5,
+            "createdAt": "2025-11-20T12:00:00+00:00",
+            "resolvedAt": null,
+            "resolved": false
+        }
+    ],
+    "hydra:totalItems": 1
 }
 ```
 
@@ -145,9 +148,10 @@ Récupère une alerte spécifique.
 Marque une alerte comme résolue.
 
 **Corps de la requête** :
+
 ```json
 {
-  "resolvedAt": "2025-11-20T14:30:00Z"
+    "resolvedAt": "2025-11-20T14:30:00Z"
 }
 ```
 
@@ -166,6 +170,7 @@ Marque une alerte comme résolue.
 Toutes les requêtes Alert sont automatiquement filtrées pour ne retourner que les alertes liées aux réservoirs appartenant à l'utilisateur connecté.
 
 **Chaîne de filtrage** :
+
 ```
 Alert → Reservoir → Farm → Owner == current_user
 ```
@@ -182,8 +187,9 @@ PATCH /api/farms/{id}
 ```
 
 **Sans CultureProfile** :
-- Aucune alerte n'est générée
-- Un log INFO est enregistré
+
+-   Aucune alerte n'est générée
+-   Un log INFO est enregistré
 
 ## Tests
 
@@ -283,12 +289,12 @@ php bin/console doctrine:query:sql "SELECT * FROM alert ORDER BY created_at DESC
 
 ```bash
 php bin/console doctrine:query:sql "
-  SELECT 
-    type, 
-    severity, 
-    COUNT(*) as count 
-  FROM alert 
-  WHERE resolved_at IS NULL 
+  SELECT
+    type,
+    severity,
+    COUNT(*) as count
+  FROM alert
+  WHERE resolved_at IS NULL
   GROUP BY type, severity
 "
 ```
@@ -297,8 +303,8 @@ php bin/console doctrine:query:sql "
 
 ```bash
 php bin/console doctrine:query:sql "
-  DELETE FROM alert 
-  WHERE resolved_at IS NOT NULL 
+  DELETE FROM alert
+  WHERE resolved_at IS NOT NULL
     AND resolved_at < datetime('now', '-30 days')
 "
 ```
@@ -307,11 +313,12 @@ php bin/console doctrine:query:sql "
 
 Le service `AnomalyDetector` génère des logs pour chaque détection :
 
-- **INFO** : Pas de CultureProfile configuré
-- **INFO** : Nombre d'alertes générées
-- **WARNING** : Détails de chaque anomalie détectée
+-   **INFO** : Pas de CultureProfile configuré
+-   **INFO** : Nombre d'alertes générées
+-   **WARNING** : Détails de chaque anomalie détectée
 
 **Exemple de logs** :
+
 ```
 [2025-11-20 12:00:15] app.WARNING: pH anomaly detected {"measurement_id":42,"ph_measured":7.5,"ph_min":5.5,"ph_max":6.5}
 [2025-11-20 12:00:15] app.INFO: Anomaly detection completed {"measurement_id":42,"alerts_count":1}
@@ -320,49 +327,54 @@ Le service `AnomalyDetector` génère des logs pour chaque détection :
 ## Évolutions futures (V2)
 
 1. **Notifications** :
-   - Email automatique pour alertes CRITICAL
-   - Notifications push mobile
-   - Webhooks configurables
+
+    - Email automatique pour alertes CRITICAL
+    - Notifications push mobile
+    - Webhooks configurables
 
 2. **Seuils personnalisés** :
-   - Permettre de définir des seuils par réservoir
-   - Surcharge du CultureProfile au niveau Farm ou Reservoir
+
+    - Permettre de définir des seuils par réservoir
+    - Surcharge du CultureProfile au niveau Farm ou Reservoir
 
 3. **Tendances** :
-   - Détection de tendances (valeurs qui se dégradent progressivement)
-   - Prédiction d'anomalies futures
+
+    - Détection de tendances (valeurs qui se dégradent progressivement)
+    - Prédiction d'anomalies futures
 
 4. **Actions correctives** :
-   - Suggestions automatiques d'actions
-   - Intégration avec systèmes d'automatisation
+
+    - Suggestions automatiques d'actions
+    - Intégration avec systèmes d'automatisation
 
 5. **Dashboard** :
-   - Vue d'ensemble des alertes actives
-   - Graphiques et statistiques
+    - Vue d'ensemble des alertes actives
+    - Graphiques et statistiques
 
 ## Acceptance Criteria ✅
 
-- [x] Une mesure hors plage génère une alerte automatiquement
-- [x] Plusieurs anomalies génèrent plusieurs alertes distinctes
-- [x] Aucune alerte n'est créée si la mesure est dans les normes
-- [x] `GET /api/alerts` retourne les alertes de l'utilisateur triées par `createdAt DESC`
-- [x] Sécurité : un utilisateur ne peut voir que ses propres alertes
-- [x] Filtrage automatique par AlertQueryExtension
-- [x] Types d'alertes : PH_OUT_OF_RANGE, EC_OUT_OF_RANGE, TEMP_OUT_OF_RANGE
-- [x] Niveaux de sévérité : INFO, WARN, CRITICAL
-- [x] Possibilité de marquer une alerte comme résolue (PATCH)
-- [x] Documentation complète avec docstrings
+-   [x] Une mesure hors plage génère une alerte automatiquement
+-   [x] Plusieurs anomalies génèrent plusieurs alertes distinctes
+-   [x] Aucune alerte n'est créée si la mesure est dans les normes
+-   [x] `GET /api/alerts` retourne les alertes de l'utilisateur triées par `createdAt DESC`
+-   [x] Sécurité : un utilisateur ne peut voir que ses propres alertes
+-   [x] Filtrage automatique par AlertQueryExtension
+-   [x] Types d'alertes : PH_OUT_OF_RANGE, EC_OUT_OF_RANGE, TEMP_OUT_OF_RANGE
+-   [x] Niveaux de sévérité : INFO, WARN, CRITICAL
+-   [x] Possibilité de marquer une alerte comme résolue (PATCH)
+-   [x] Documentation complète avec docstrings
 
 ## Conformité OpenAPI
 
 La spécification OpenAPI est générée automatiquement par API Platform et comprend :
 
-- Tous les endpoints Alert (GET, PATCH)
-- Schémas de requête/réponse
-- Filtres disponibles
-- Règles de sécurité
+-   Tous les endpoints Alert (GET, PATCH)
+-   Schémas de requête/réponse
+-   Filtres disponibles
+-   Règles de sécurité
 
 **Accès à la documentation** :
+
 ```
 http://localhost/api/docs
 ```
@@ -370,23 +382,26 @@ http://localhost/api/docs
 ## Fichiers créés/modifiés
 
 ### Créés
-- `src/Entity/Alert.php`
-- `src/Repository/AlertRepository.php`
-- `src/Service/AnomalyDetector.php`
-- `src/Extension/AlertQueryExtension.php`
-- `migrations/Version20251120113530.php`
-- `backend/docs/EPIC-2-ALERT-IMPLEMENTATION.md` (ce fichier)
+
+-   `src/Entity/Alert.php`
+-   `src/Repository/AlertRepository.php`
+-   `src/Service/AnomalyDetector.php`
+-   `src/Extension/AlertQueryExtension.php`
+-   `migrations/Version20251120113530.php`
+-   `backend/docs/EPIC-2-ALERT-IMPLEMENTATION.md` (ce fichier)
 
 ### Modifiés
-- `src/Entity/Farm.php` - Ajout relation `cultureProfile`
-- `src/Entity/Reservoir.php` - Ajout relation `alerts`
-- `src/State/MeasurementPostProcessor.php` - Intégration AnomalyDetector
+
+-   `src/Entity/Farm.php` - Ajout relation `cultureProfile`
+-   `src/Entity/Reservoir.php` - Ajout relation `alerts`
+-   `src/State/MeasurementPostProcessor.php` - Intégration AnomalyDetector
 
 ## Résumé
 
 Le système d'alertes automatiques est maintenant **opérationnel et prêt pour la production**. Il détecte automatiquement les anomalies lors de la création de mesures, génère des alertes avec des niveaux de sévérité appropriés, et respecte toutes les contraintes de sécurité.
 
 Pour activer le système :
+
 1. Configurer un `CultureProfile` pour chaque ferme
 2. Créer des mesures via l'API
 3. Consulter les alertes générées sur `/api/alerts`
