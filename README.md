@@ -9,34 +9,9 @@ HydroSense est un monorepo contenant :
 - **Frontend** : Application Nuxt 3
 - **Infrastructure** : Configuration Docker et déploiement
 
-## 📋 Création des Issues
+## 📊 Structure du Projet
 
-Ce projet utilise 24 issues organisées en 5 EPICs pour structurer le développement.
-
-Pour créer toutes les issues automatiquement, consultez le [Guide de Création des Issues](./ISSUES_CREATION_GUIDE.md).
-
-### Méthodes disponibles
-
-1. **Script Shell (gh CLI)** - Recommandé
-   ```bash
-   ./create-issues.sh
-   ```
-
-2. **Script Node.js**
-   ```bash
-   export GITHUB_TOKEN=your_token
-   node create-issues.js
-   ```
-
-3. **Script Python**
-   ```bash
-   export GITHUB_TOKEN=your_token
-   python3 create-issues.py
-   ```
-
-Voir [ISSUES_CREATION_GUIDE.md](./ISSUES_CREATION_GUIDE.md) pour les instructions détaillées.
-
-## 📊 Structure des EPICs
+Le développement est organisé en 5 EPICs :
 
 - **EPIC-1** : Setup Monorepo (1 issue)
 - **EPIC-2** : Backend Symfony + API Platform (10 issues)
@@ -50,7 +25,6 @@ Voir [ISSUES_CREATION_GUIDE.md](./ISSUES_CREATION_GUIDE.md) pour les instruction
 
 ## 📝 Documentation
 
-- [Guide de Création des Issues](./ISSUES_CREATION_GUIDE.md)
 - Backend : À venir
 - Frontend : À venir
 - Infrastructure : À venir
