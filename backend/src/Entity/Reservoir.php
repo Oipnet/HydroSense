@@ -159,10 +159,18 @@ class Reservoir
     #[ORM\OneToMany(targetEntity: Alert::class, mappedBy: 'reservoir', orphanRemoval: true)]
     private Collection $alerts;
 
+    /**
+     * @var Collection<int, JournalEntry>
+     */
+    #[ORM\OneToMany(targetEntity: JournalEntry::class, mappedBy: 'reservoir', orphanRemoval: true)]
+    #[Groups(['reservoir:item'])]
+    private Collection $journalEntries;
+
     public function __construct()
     {
         $this->measurements = new ArrayCollection();
         $this->alerts = new ArrayCollection();
+        $this->journalEntries = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
@@ -316,6 +324,36 @@ class Reservoir
             // set the owning side to null (unless already changed)
             if ($alert->getReservoir() === $this) {
                 $alert->setReservoir(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, JournalEntry>
+     */
+    public function getJournalEntries(): Collection
+    {
+        return $this->journalEntries;
+    }
+
+    public function addJournalEntry(JournalEntry $journalEntry): static
+    {
+        if (!$this->journalEntries->contains($journalEntry)) {
+            $this->journalEntries->add($journalEntry);
+            $journalEntry->setReservoir($this);
+        }
+
+        return $this;
+    }
+
+    public function removeJournalEntry(JournalEntry $journalEntry): static
+    {
+        if ($this->journalEntries->removeElement($journalEntry)) {
+            // set the owning side to null (unless already changed)
+            if ($journalEntry->getReservoir() === $this) {
+                $journalEntry->setReservoir(null);
             }
         }
 

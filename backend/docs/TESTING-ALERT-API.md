@@ -43,9 +43,10 @@ curl -X POST http://localhost/api/measurements \
   }'
 ```
 
-**Résultat attendu** : 
-- Mesure créée avec succès (status 201)
-- Aucune alerte générée
+**Résultat attendu** :
+
+-   Mesure créée avec succès (status 201)
+-   Aucune alerte générée
 
 ## Étape 4 : Créer une mesure avec pH hors plage (1 alerte)
 
@@ -63,8 +64,9 @@ curl -X POST http://localhost/api/measurements \
 ```
 
 **Résultat attendu** :
-- Mesure créée avec succès
-- 1 alerte `PH_OUT_OF_RANGE` générée automatiquement
+
+-   Mesure créée avec succès
+-   1 alerte `PH_OUT_OF_RANGE` générée automatiquement
 
 ## Étape 5 : Vérifier les alertes générées
 
@@ -75,25 +77,26 @@ curl http://localhost/api/alerts \
 ```
 
 **Résultat attendu** :
+
 ```json
 {
-  "hydra:member": [
-    {
-      "@id": "/api/alerts/1",
-      "@type": "Alert",
-      "id": 1,
-      "type": "PH_OUT_OF_RANGE",
-      "severity": "WARN",
-      "message": "pH level 7.80 is outside the recommended range [5.50 - 6.50] for Laitue",
-      "measuredValue": 7.8,
-      "expectedMin": 5.5,
-      "expectedMax": 6.5,
-      "createdAt": "2025-11-20T12:05:00+00:00",
-      "resolvedAt": null,
-      "resolved": false
-    }
-  ],
-  "hydra:totalItems": 1
+    "hydra:member": [
+        {
+            "@id": "/api/alerts/1",
+            "@type": "Alert",
+            "id": 1,
+            "type": "PH_OUT_OF_RANGE",
+            "severity": "WARN",
+            "message": "pH level 7.80 is outside the recommended range [5.50 - 6.50] for Laitue",
+            "measuredValue": 7.8,
+            "expectedMin": 5.5,
+            "expectedMax": 6.5,
+            "createdAt": "2025-11-20T12:05:00+00:00",
+            "resolvedAt": null,
+            "resolved": false
+        }
+    ],
+    "hydra:totalItems": 1
 }
 ```
 
@@ -122,11 +125,12 @@ curl -X POST http://localhost/api/measurements \
 ```
 
 **Résultat attendu** :
-- Mesure créée
-- 3 alertes générées :
-  - `PH_OUT_OF_RANGE` (CRITICAL - déviation > 25%)
-  - `EC_OUT_OF_RANGE` (CRITICAL - déviation > 25%)
-  - `TEMP_OUT_OF_RANGE` (WARN - déviation 10-25%)
+
+-   Mesure créée
+-   3 alertes générées :
+    -   `PH_OUT_OF_RANGE` (CRITICAL - déviation > 25%)
+    -   `EC_OUT_OF_RANGE` (CRITICAL - déviation > 25%)
+    -   `TEMP_OUT_OF_RANGE` (WARN - déviation 10-25%)
 
 ## Étape 8 : Filtrer par sévérité
 
@@ -159,9 +163,10 @@ curl http://localhost/api/alerts/999 \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
-**Résultat attendu** : 
-- 404 Not Found (si l'alerte appartient à un autre utilisateur)
-- 403 Forbidden (selon la configuration de sécurité)
+**Résultat attendu** :
+
+-   404 Not Found (si l'alerte appartient à un autre utilisateur)
+-   403 Forbidden (selon la configuration de sécurité)
 
 ## Test via la documentation OpenAPI
 
@@ -190,56 +195,60 @@ tail -f var/log/dev.log | grep -i "anomaly"
 
 ## Checklist de validation
 
-- [ ] Les alertes sont créées automatiquement lors de la création de mesures hors plage
-- [ ] Plusieurs anomalies dans une même mesure génèrent plusieurs alertes distinctes
-- [ ] Aucune alerte n'est créée pour des mesures normales
-- [ ] Les alertes sont triées par `createdAt DESC` par défaut
-- [ ] Les filtres fonctionnent (type, severity, resolved, reservoir)
-- [ ] Un utilisateur ne peut voir que ses propres alertes
-- [ ] La sévérité est calculée correctement (INFO < 10%, WARN 10-25%, CRITICAL > 25%)
-- [ ] Les alertes peuvent être marquées comme résolues
-- [ ] Les messages d'alerte sont descriptifs et incluent les valeurs
-- [ ] La documentation OpenAPI est accessible et complète
+-   [ ] Les alertes sont créées automatiquement lors de la création de mesures hors plage
+-   [ ] Plusieurs anomalies dans une même mesure génèrent plusieurs alertes distinctes
+-   [ ] Aucune alerte n'est créée pour des mesures normales
+-   [ ] Les alertes sont triées par `createdAt DESC` par défaut
+-   [ ] Les filtres fonctionnent (type, severity, resolved, reservoir)
+-   [ ] Un utilisateur ne peut voir que ses propres alertes
+-   [ ] La sévérité est calculée correctement (INFO < 10%, WARN 10-25%, CRITICAL > 25%)
+-   [ ] Les alertes peuvent être marquées comme résolues
+-   [ ] Les messages d'alerte sont descriptifs et incluent les valeurs
+-   [ ] La documentation OpenAPI est accessible et complète
 
 ## En cas de problème
 
 ### Pas d'alerte générée malgré une valeur hors plage
 
 **Vérifier** :
+
 1. La ferme a-t-elle un `cultureProfile` configuré ?
-   ```bash
-   curl http://localhost/api/farms/1 -H "Authorization: Bearer YOUR_TOKEN"
-   ```
+    ```bash
+    curl http://localhost/api/farms/1 -H "Authorization: Bearer YOUR_TOKEN"
+    ```
 2. Les logs indiquent-ils "No CultureProfile configured" ?
-   ```bash
-   tail -f var/log/dev.log | grep "No CultureProfile"
-   ```
+    ```bash
+    tail -f var/log/dev.log | grep "No CultureProfile"
+    ```
 
 **Solution** : Configurer un CultureProfile sur la ferme (voir Étape 2)
 
 ### Erreur 500 lors de la création d'une mesure
 
 **Vérifier** :
+
 1. Les logs d'erreur :
-   ```bash
-   tail -f var/log/dev.log
-   ```
+    ```bash
+    tail -f var/log/dev.log
+    ```
 2. La relation Farm → CultureProfile existe-t-elle ?
-   ```bash
-   php bin/console doctrine:schema:validate
-   ```
+    ```bash
+    php bin/console doctrine:schema:validate
+    ```
 
 **Solution** : Relancer la migration si nécessaire
 
 ### Alertes d'autres utilisateurs visibles
 
 **Vérifier** :
+
 1. Le service AlertQueryExtension est-il enregistré ?
-   ```bash
-   php bin/console debug:container AlertQueryExtension
-   ```
+    ```bash
+    php bin/console debug:container AlertQueryExtension
+    ```
 
 **Solution** : Vider le cache
+
 ```bash
 php bin/console cache:clear
 ```
@@ -265,5 +274,6 @@ php bin/console debug:router | grep alert
 Si tous les tests passent, le système d'alertes est **opérationnel** ! 🎉
 
 Pour toute question, consulter :
-- Documentation complète : `backend/docs/EPIC-2-ALERT-IMPLEMENTATION.md`
-- API docs : http://localhost/api/docs
+
+-   Documentation complète : `backend/docs/EPIC-2-ALERT-IMPLEMENTATION.md`
+-   API docs : http://localhost/api/docs
