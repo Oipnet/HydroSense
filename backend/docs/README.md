@@ -7,11 +7,11 @@ Ce dossier contient toute la documentation technique du backend HydroSense.
 ### EPIC-2 : Gestion des Fermes et Réservoirs
 
 1. **[EPIC-2-FARM-RESERVOIR-IMPLEMENTATION.md](./EPIC-2-FARM-RESERVOIR-IMPLEMENTATION.md)**
-   - Documentation complète de la gestion des fermes et réservoirs
-   - Architecture et sécurité par utilisateur
-   - Modèle de données (Farm ↔ Reservoir)
-   - QueryExtensions pour le filtrage automatique
-   - Guide de test avec scénarios multi-utilisateurs
+    - Documentation complète de la gestion des fermes et réservoirs
+    - Architecture et sécurité par utilisateur
+    - Modèle de données (Farm ↔ Reservoir)
+    - QueryExtensions pour le filtrage automatique
+    - Guide de test avec scénarios multi-utilisateurs
 
 ### EPIC-2 : Import CSV des Mesures
 
