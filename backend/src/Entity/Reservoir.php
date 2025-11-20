@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\ApiProperty;
 use App\Dto\CsvImportInput;
 use App\Repository\ReservoirRepository;
 use App\State\CsvImportProcessor;
@@ -16,21 +17,36 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Reservoir represents a nutrient tank in a farm.
+ * Each reservoir belongs to a farm and contains measurements.
+ */
 #[ORM\Entity(repositoryClass: ReservoirRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 #[ApiResource(
     operations: [
-        new Get(normalizationContext: ['groups' => ['reservoir:read']]),
-        new GetCollection(normalizationContext: ['groups' => ['reservoir:read']]),
+        new Get(
+            security: "is_granted('ROLE_USER') and object.farm.owner == user",
+            normalizationContext: ['groups' => ['reservoir:read', 'reservoir:item']]
+        ),
+        new GetCollection(
+            security: "is_granted('ROLE_USER')",
+            normalizationContext: ['groups' => ['reservoir:read']]
+        ),
         new Post(
+            security: "is_granted('ROLE_USER')",
             denormalizationContext: ['groups' => ['reservoir:write']],
-            securityPostDenormalize: "is_granted('ROLE_USER')"
+            securityPostDenormalize: "is_granted('ROLE_USER') and object.farm.owner == user"
         ),
         new Put(
-            denormalizationContext: ['groups' => ['reservoir:write']],
-            security: "is_granted('ROLE_USER')"
+            security: "is_granted('ROLE_USER') and object.farm.owner == user",
+            denormalizationContext: ['groups' => ['reservoir:write']]
         ),
-        new Delete(security: "is_granted('ROLE_ADMIN')"),
+        new Delete(
+            security: "is_granted('ROLE_USER') and object.farm.owner == user"
+        ),
         new Post(
             uriTemplate: '/reservoirs/{id}/measurements/import',
             input: CsvImportInput::class,
@@ -91,27 +107,53 @@ class Reservoir
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['reservoir:read', 'reservoir:write', 'measurement:read'])]
+    #[Assert\NotBlank(message: 'Le nom du réservoir ne peut pas être vide.')]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Le nom doit faire au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.'
+    )]
+    #[Groups(['reservoir:read', 'reservoir:write', 'measurement:read', 'farm:item'])]
     private ?string $name = null;
+
+    #[ORM\ManyToOne(targetEntity: Farm::class, inversedBy: 'reservoirs')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Le réservoir doit appartenir à une ferme.')]
+    #[Groups(['reservoir:read', 'reservoir:write'])]
+    private ?Farm $farm = null;
+
+    #[ORM\Column]
+    #[Assert\NotNull(message: 'Le volume ne peut pas être vide.')]
+    #[Assert\Positive(message: 'Le volume doit être supérieur à zéro.')]
+    #[Groups(['reservoir:read', 'reservoir:write', 'farm:item'])]
+    private ?float $volumeLiters = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['reservoir:read', 'reservoir:write'])]
     private ?string $description = null;
 
-    #[ORM\Column(nullable: true)]
-    #[Groups(['reservoir:read', 'reservoir:write'])]
-    private ?float $capacity = null;
-
     #[ORM\Column(length: 50, nullable: true)]
     #[Groups(['reservoir:read', 'reservoir:write'])]
     private ?string $location = null;
 
+    #[ORM\Column]
+    #[Groups(['reservoir:read'])]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    #[Groups(['reservoir:read'])]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     #[ORM\OneToMany(targetEntity: Measurement::class, mappedBy: 'reservoir', orphanRemoval: true)]
+    #[Groups(['reservoir:item'])]
     private Collection $measurements;
 
     public function __construct()
     {
         $this->measurements = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -131,6 +173,30 @@ class Reservoir
         return $this;
     }
 
+    public function getFarm(): ?Farm
+    {
+        return $this->farm;
+    }
+
+    public function setFarm(?Farm $farm): static
+    {
+        $this->farm = $farm;
+
+        return $this;
+    }
+
+    public function getVolumeLiters(): ?float
+    {
+        return $this->volumeLiters;
+    }
+
+    public function setVolumeLiters(float $volumeLiters): static
+    {
+        $this->volumeLiters = $volumeLiters;
+
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -139,18 +205,6 @@ class Reservoir
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getCapacity(): ?float
-    {
-        return $this->capacity;
-    }
-
-    public function setCapacity(?float $capacity): static
-    {
-        $this->capacity = $capacity;
 
         return $this;
     }
@@ -165,6 +219,36 @@ class Reservoir
         $this->location = $location;
 
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     /**
