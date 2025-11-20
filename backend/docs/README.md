@@ -4,9 +4,18 @@ Ce dossier contient toute la documentation technique du backend HydroSense.
 
 ## 📚 Documents disponibles
 
+### EPIC-2 : Gestion des Fermes et Réservoirs
+
+1. **[EPIC-2-FARM-RESERVOIR-IMPLEMENTATION.md](./EPIC-2-FARM-RESERVOIR-IMPLEMENTATION.md)**
+   - Documentation complète de la gestion des fermes et réservoirs
+   - Architecture et sécurité par utilisateur
+   - Modèle de données (Farm ↔ Reservoir)
+   - QueryExtensions pour le filtrage automatique
+   - Guide de test avec scénarios multi-utilisateurs
+
 ### EPIC-2 : Import CSV des Mesures
 
-1. **[EPIC-2-CSV-IMPORT-IMPLEMENTATION.md](./EPIC-2-CSV-IMPORT-IMPLEMENTATION.md)**
+2. **[EPIC-2-CSV-IMPORT-IMPLEMENTATION.md](./EPIC-2-CSV-IMPORT-IMPLEMENTATION.md)**
 
     - Documentation complète de l'implémentation de l'import CSV
     - Architecture et choix techniques
@@ -15,7 +24,7 @@ Ce dossier contient toute la documentation technique du backend HydroSense.
     - Gestion des erreurs
     - Exemples d'utilisation
 
-2. **[TESTING-CSV-IMPORT.md](./TESTING-CSV-IMPORT.md)**
+3. **[TESTING-CSV-IMPORT.md](./TESTING-CSV-IMPORT.md)**
 
     - Guide de test détaillé
     - Exemples avec curl et HTTPie
@@ -23,7 +32,7 @@ Ce dossier contient toute la documentation technique du backend HydroSense.
     - Vérification des données importées
     - Résolution de problèmes
 
-3. **[REFACTORING-STATE-PROCESSOR.md](./REFACTORING-STATE-PROCESSOR.md)**
+4. **[REFACTORING-STATE-PROCESSOR.md](./REFACTORING-STATE-PROCESSOR.md)**
     - Documentation du refactoring Controller → State Processor
     - Comparaison avant/après
     - Avantages de l'architecture modernisée
@@ -31,20 +40,26 @@ Ce dossier contient toute la documentation technique du backend HydroSense.
 
 ## 🚀 Démarrage rapide
 
-Pour tester l'import CSV :
+### Tester la gestion des Fermes et Réservoirs :
 
 1. Démarrer le serveur : `symfony server:start`
-2. Créer un réservoir : voir [TESTING-CSV-IMPORT.md](./TESTING-CSV-IMPORT.md#créer-un-réservoir-de-test)
-3. Importer un CSV : voir [TESTING-CSV-IMPORT.md](./TESTING-CSV-IMPORT.md#test-1--import-csv-valide)
+2. Créer 2 utilisateurs de test
+3. S'authentifier et créer des fermes : voir [EPIC-2-FARM-RESERVOIR-IMPLEMENTATION.md](./EPIC-2-FARM-RESERVOIR-IMPLEMENTATION.md#guide-de-test)
+
+### Tester l'import CSV :
+
+1. Créer une ferme et un réservoir
+2. Importer un CSV : voir [TESTING-CSV-IMPORT.md](./TESTING-CSV-IMPORT.md#test-1--import-csv-valide)
 
 ## 📁 Structure de la documentation
 
 ```
 docs/
-├── README.md                              ← Vous êtes ici
-├── EPIC-2-CSV-IMPORT-IMPLEMENTATION.md   ← Doc complète
-├── TESTING-CSV-IMPORT.md                  ← Guide de test
-└── REFACTORING-STATE-PROCESSOR.md         ← Doc refactoring
+├── README.md                                    ← Vous êtes ici
+├── EPIC-2-FARM-RESERVOIR-IMPLEMENTATION.md     ← Gestion Fermes & Réservoirs
+├── EPIC-2-CSV-IMPORT-IMPLEMENTATION.md         ← Import CSV des mesures
+├── TESTING-CSV-IMPORT.md                        ← Guide de test CSV
+└── REFACTORING-STATE-PROCESSOR.md               ← Doc refactoring
 ```
 
 ## 🔗 Liens utiles
