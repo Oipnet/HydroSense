@@ -8,6 +8,7 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
+    "generate:api": "openapi-typescript ../backend/public/openapi.json -o ./app/lib/api/schema.d.ts",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck"
@@ -15,6 +16,7 @@
   "dependencies": {
     "@pinia/nuxt": "^0.11.3",
     "nuxt": "^4.2.1",
+    "openapi-fetch": "^0.15.0",
     "pinia": "^3.0.4",
     "vue": "^3.5.24",
     "vue-router": "^4.6.3"
@@ -22,6 +24,7 @@
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@types/node": "^24.10.1",
+    "openapi-typescript": "^7.10.1",
     "typescript": "^5.9.3",
     "vue-tsc": "^2.1.0"
   },

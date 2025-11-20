@@ -113,11 +113,35 @@ Ce dossier contient toute la documentation technique du backend HydroSense.
 17. **[INSTALLATION-ALERTS.md](./INSTALLATION-ALERTS.md)**
     -   Installation du système d'alertes
 
-### 🌾 EPIC-2 : Profils de Culture
+### 🌾 Profils de Culture
 
 18. **[EPIC-2-CultureProfile-IMPLEMENTATION.md](./EPIC-2-CultureProfile-IMPLEMENTATION.md)**
     -   Gestion des profils de culture
     -   Configuration des paramètres optimaux
+
+### 🔌 EPIC-3 : Frontend Nuxt 4
+
+19. **[ISSUE-15-NUXT4-SETUP.md](./ISSUE-15-NUXT4-SETUP.md)**
+
+    -   Configuration Nuxt 4 + TypeScript + Pinia + TailwindCSS
+    -   Architecture frontend complète
+
+20. **[ISSUE-15-COMPLETE.md](./ISSUE-15-COMPLETE.md)**
+
+    -   Résumé de l'implémentation Nuxt 4
+
+21. **[COMMIT-MESSAGE-NUXT4.md](./COMMIT-MESSAGE-NUXT4.md)**
+
+    -   Message de commit pour l'issue #15
+
+22. **[ISSUE-16-OPENAPI-CLIENT.md](./ISSUE-16-OPENAPI-CLIENT.md)**
+
+    -   Génération automatique du client API TypeScript
+    -   Integration openapi-typescript + openapi-fetch
+    -   Composables typés pour l'API
+
+23. **[COMMIT-MESSAGE-OPENAPI-CLIENT.md](./COMMIT-MESSAGE-OPENAPI-CLIENT.md)**
+    -   Message de commit pour l'issue #16
 
 ### 🏗️ Architecture
 
@@ -189,6 +213,13 @@ docs/
 ├── 🌾 Profils de Culture
 │   └── EPIC-2-CultureProfile-IMPLEMENTATION.md
 │
+├── 🔌 Frontend Nuxt 4
+│   ├── ISSUE-15-NUXT4-SETUP.md
+│   ├── ISSUE-15-COMPLETE.md
+│   ├── COMMIT-MESSAGE-NUXT4.md
+│   ├── ISSUE-16-OPENAPI-CLIENT.md
+│   └── COMMIT-MESSAGE-OPENAPI-CLIENT.md
+│
 └── 🏗️ Architecture
     └── REFACTORING-STATE-PROCESSOR.md
 ```
@@ -201,11 +232,12 @@ docs/
 
 ## 📊 Statistiques de la documentation
 
--   **Total de fichiers** : 25 documents
+-   **Total de fichiers** : 30 documents
 -   **Documentation JournalEntry** : 2500+ lignes
--   **Guides de test** : 5 fichiers
--   **Guides de démarrage** : 3 fichiers
--   **Documentation technique** : 10 fichiers
+-   **Documentation Frontend** : 1000+ lignes
+-   **Guides de test** : 6 fichiers
+-   **Guides de démarrage** : 4 fichiers
+-   **Documentation technique** : 13 fichiers
 
 ## 🎯 Par rôle
 
