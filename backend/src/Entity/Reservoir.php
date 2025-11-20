@@ -74,9 +74,9 @@ use Symfony\Component\Validator\Constraints as Assert;
                     ])
                 ),
                 responses: [
-                    '200' => [
-                        'description' => 'Import successful',
-                        'content' => [
+                    '200' => new \ApiPlatform\OpenApi\Model\Response(
+                        description: 'Import successful',
+                        content: new \ArrayObject([
                             'application/json' => [
                                 'schema' => [
                                     'type' => 'object',
@@ -88,10 +88,14 @@ use Symfony\Component\Validator\Constraints as Assert;
                                     ]
                                 ]
                             ]
-                        ]
-                    ],
-                    '400' => ['description' => 'Invalid CSV format or missing file'],
-                    '404' => ['description' => 'Reservoir not found']
+                        ])
+                    ),
+                    '400' => new \ApiPlatform\OpenApi\Model\Response(
+                        description: 'Invalid CSV format or missing file'
+                    ),
+                    '404' => new \ApiPlatform\OpenApi\Model\Response(
+                        description: 'Reservoir not found'
+                    )
                 ]
             ),
             name: 'csv_import'
