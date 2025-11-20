@@ -1,0 +1,41 @@
+api_platform:
+    title: "HydroSense API"
+    version: "1.0.0"
+    description: "API pour la gestion des données de capteurs hydrométriques"
+    defaults:
+        stateless: true
+        cache_headers:
+            vary: ["Content-Type", "Authorization", "Origin"]
+
+    # Activer les interfaces de documentation
+    enable_swagger_ui: true
+    enable_re_doc: true
+    enable_docs: true
+
+    # Configuration Swagger UI
+    swagger:
+        versions: [3]
+
+    # Configuration des formats supportés
+    formats:
+        json: ["application/json"]
+        jsonld: ["application/ld+json"]
+        html: ["text/html"]
+
+    # Configuration de la pagination
+    collection:
+        pagination:
+            enabled: true
+            page_parameter_name: "page"
+            items_per_page_parameter_name: "itemsPerPage"
+
+    # Configuration des erreurs
+    show_webby: true
+
+    # Configuration pour OpenAPI
+    openapi:
+        contact:
+            name: "HydroSense API Support"
+            email: "support@hydrosense.com"
+        license:
+            name: "MIT"
