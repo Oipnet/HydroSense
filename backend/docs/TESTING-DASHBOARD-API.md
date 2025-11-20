@@ -29,25 +29,25 @@ curl -X GET http://localhost:8000/api/dashboard \
 
 ```json
 {
-  "reservoirs": [
-    {
-      "id": 1,
-      "name": "Bac salade A",
-      "farmName": "Ferme Nord",
-      "lastMeasurement": {
-        "measuredAt": "2025-01-10T08:30:00+00:00",
-        "ph": 5.9,
-        "ec": 1.5,
-        "waterTemp": 20.3
-      },
-      "status": "OK"
+    "reservoirs": [
+        {
+            "id": 1,
+            "name": "Bac salade A",
+            "farmName": "Ferme Nord",
+            "lastMeasurement": {
+                "measuredAt": "2025-01-10T08:30:00+00:00",
+                "ph": 5.9,
+                "ec": 1.5,
+                "waterTemp": 20.3
+            },
+            "status": "OK"
+        }
+    ],
+    "alerts": {
+        "total": 3,
+        "critical": 1,
+        "warn": 2
     }
-  ],
-  "alerts": {
-    "total": 3,
-    "critical": 1,
-    "warn": 2
-  }
 }
 ```
 
@@ -97,36 +97,38 @@ curl -X GET http://localhost:8000/api/dashboard \
 ### Scenario 1 : User sans réservoirs
 
 **Attendu** :
+
 ```json
 {
-  "reservoirs": [],
-  "alerts": {
-    "total": 0,
-    "critical": 0,
-    "warn": 0
-  }
+    "reservoirs": [],
+    "alerts": {
+        "total": 0,
+        "critical": 0,
+        "warn": 0
+    }
 }
 ```
 
 ### Scenario 2 : User avec réservoirs mais sans mesures
 
 **Attendu** :
+
 ```json
 {
-  "reservoirs": [
-    {
-      "id": 1,
-      "name": "Bac A",
-      "farmName": "Ferme Test",
-      "lastMeasurement": null,
-      "status": "OK"
+    "reservoirs": [
+        {
+            "id": 1,
+            "name": "Bac A",
+            "farmName": "Ferme Test",
+            "lastMeasurement": null,
+            "status": "OK"
+        }
+    ],
+    "alerts": {
+        "total": 0,
+        "critical": 0,
+        "warn": 0
     }
-  ],
-  "alerts": {
-    "total": 0,
-    "critical": 0,
-    "warn": 0
-  }
 }
 ```
 
@@ -136,34 +138,38 @@ curl -X GET http://localhost:8000/api/dashboard \
 
 ## ✅ Vérifications
 
-- [ ] Le endpoint `/api/dashboard` répond avec un code `200 OK`
-- [ ] La réponse contient les champs `reservoirs` et `alerts`
-- [ ] Seuls les réservoirs de l'utilisateur connecté apparaissent
-- [ ] La dernière mesure est correcte pour chaque réservoir
-- [ ] Le statut est calculé correctement (OK/WARN/CRITICAL)
-- [ ] Les compteurs d'alertes sont corrects
-- [ ] Un utilisateur non authentifié reçoit un `401 Unauthorized`
+-   [ ] Le endpoint `/api/dashboard` répond avec un code `200 OK`
+-   [ ] La réponse contient les champs `reservoirs` et `alerts`
+-   [ ] Seuls les réservoirs de l'utilisateur connecté apparaissent
+-   [ ] La dernière mesure est correcte pour chaque réservoir
+-   [ ] Le statut est calculé correctement (OK/WARN/CRITICAL)
+-   [ ] Les compteurs d'alertes sont corrects
+-   [ ] Un utilisateur non authentifié reçoit un `401 Unauthorized`
 
 ## 🐛 Dépannage
 
 ### Erreur 401 Unauthorized
-- Vérifier que le token JWT est valide
-- Vérifier que le token est envoyé dans le header `Authorization: Bearer <TOKEN>`
+
+-   Vérifier que le token JWT est valide
+-   Vérifier que le token est envoyé dans le header `Authorization: Bearer <TOKEN>`
 
 ### Erreur 404 Not Found
-- Vérifier que la route `/api/dashboard` existe : `php bin/console debug:router | grep dashboard`
-- Vérifier que le serveur Symfony est démarré
+
+-   Vérifier que la route `/api/dashboard` existe : `php bin/console debug:router | grep dashboard`
+-   Vérifier que le serveur Symfony est démarré
 
 ### Erreur 500 Internal Server Error
-- Consulter les logs : `tail -f var/log/dev.log`
-- Vérifier que les repositories sont correctement injectés
+
+-   Consulter les logs : `tail -f var/log/dev.log`
+-   Vérifier que les repositories sont correctement injectés
 
 ### Pas de données retournées
-- Vérifier que l'utilisateur a des fermes et des réservoirs
-- Vérifier que les relations `farm.owner` sont correctes
+
+-   Vérifier que l'utilisateur a des fermes et des réservoirs
+-   Vérifier que les relations `farm.owner` sont correctes
 
 ## 📚 Ressources
 
-- Documentation OpenAPI : http://localhost:8000/api/docs
-- Logs Symfony : `backend/var/log/dev.log`
-- Documentation complète : `backend/docs/EPIC-2-DASHBOARD-IMPLEMENTATION.md`
+-   Documentation OpenAPI : http://localhost:8000/api/docs
+-   Logs Symfony : `backend/var/log/dev.log`
+-   Documentation complète : `backend/docs/EPIC-2-DASHBOARD-IMPLEMENTATION.md`

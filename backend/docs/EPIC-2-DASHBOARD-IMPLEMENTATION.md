@@ -36,37 +36,37 @@ backend/src/
 
 ```json
 {
-  "reservoirs": [
-    {
-      "id": 1,
-      "name": "Bac salade A",
-      "farmName": "Ferme Nord",
-      "lastMeasurement": {
-        "measuredAt": "2025-01-10T08:30:00+00:00",
-        "ph": 5.9,
-        "ec": 1.5,
-        "waterTemp": 20.3
-      },
-      "status": "OK"
-    },
-    {
-      "id": 2,
-      "name": "Bac tomate B",
-      "farmName": "Ferme Nord",
-      "lastMeasurement": {
-        "measuredAt": "2025-01-10T09:15:00+00:00",
-        "ph": 7.2,
-        "ec": 2.8,
-        "waterTemp": 22.5
-      },
-      "status": "CRITICAL"
+    "reservoirs": [
+        {
+            "id": 1,
+            "name": "Bac salade A",
+            "farmName": "Ferme Nord",
+            "lastMeasurement": {
+                "measuredAt": "2025-01-10T08:30:00+00:00",
+                "ph": 5.9,
+                "ec": 1.5,
+                "waterTemp": 20.3
+            },
+            "status": "OK"
+        },
+        {
+            "id": 2,
+            "name": "Bac tomate B",
+            "farmName": "Ferme Nord",
+            "lastMeasurement": {
+                "measuredAt": "2025-01-10T09:15:00+00:00",
+                "ph": 7.2,
+                "ec": 2.8,
+                "waterTemp": 22.5
+            },
+            "status": "CRITICAL"
+        }
+    ],
+    "alerts": {
+        "total": 3,
+        "critical": 1,
+        "warn": 2
     }
-  ],
-  "alerts": {
-    "total": 3,
-    "critical": 1,
-    "warn": 2
-  }
 }
 ```
 
@@ -76,18 +76,19 @@ backend/src/
 
 Le statut de chaque réservoir est calculé en fonction des alertes **non résolues** :
 
-| Condition | Statut |
-|-----------|--------|
-| Au moins une alerte **CRITICAL** non résolue | `CRITICAL` |
-| Au moins une alerte **WARN** non résolue (pas de CRITICAL) | `WARN` |
-| Aucune alerte ou seulement des alertes **INFO** | `OK` |
+| Condition                                                  | Statut     |
+| ---------------------------------------------------------- | ---------- |
+| Au moins une alerte **CRITICAL** non résolue               | `CRITICAL` |
+| Au moins une alerte **WARN** non résolue (pas de CRITICAL) | `WARN`     |
+| Aucune alerte ou seulement des alertes **INFO**            | `OK`       |
 
 ### Agrégation des alertes
 
 Le compteur d'alertes inclut :
-- **total** : Nombre total d'alertes non résolues
-- **critical** : Nombre d'alertes CRITICAL non résolues
-- **warn** : Nombre d'alertes WARN non résolues
+
+-   **total** : Nombre total d'alertes non résolues
+-   **critical** : Nombre d'alertes CRITICAL non résolues
+-   **warn** : Nombre d'alertes WARN non résolues
 
 ### Dernière mesure
 
@@ -95,10 +96,10 @@ Pour chaque réservoir, on récupère la mesure la plus récente (triée par `me
 
 ## 🔐 Sécurité
 
-- ✅ L'endpoint est protégé par `is_granted('ROLE_USER')`
-- ✅ Les données sont automatiquement filtrées : seuls les réservoirs appartenant aux fermes de l'utilisateur sont retournés
-- ✅ Pas de risque de fuite de données entre utilisateurs
-- ✅ Aucun paramètre d'ID dans l'URL : tout est basé sur le user authentifié
+-   ✅ L'endpoint est protégé par `is_granted('ROLE_USER')`
+-   ✅ Les données sont automatiquement filtrées : seuls les réservoirs appartenant aux fermes de l'utilisateur sont retournés
+-   ✅ Pas de risque de fuite de données entre utilisateurs
+-   ✅ Aucun paramètre d'ID dans l'URL : tout est basé sur le user authentifié
 
 ## 🧪 Tests manuels
 
@@ -178,10 +179,11 @@ Authorization: Bearer <TOKEN>
 ```
 
 **Résultat attendu** :
-- Les 2 réservoirs apparaissent
-- Chaque réservoir a sa dernière mesure
-- Le statut reflète les alertes (si présentes)
-- Les compteurs d'alertes sont corrects
+
+-   Les 2 réservoirs apparaissent
+-   Chaque réservoir a sa dernière mesure
+-   Le statut reflète les alertes (si présentes)
+-   Les compteurs d'alertes sont corrects
 
 ### Scénario de test 2 : Isolation des users
 
@@ -215,8 +217,9 @@ Authorization: Bearer <TOKEN_B>
 ```
 
 **Résultat attendu** :
-- User B ne voit QUE ses propres réservoirs
-- Les réservoirs de User A n'apparaissent PAS
+
+-   User B ne voit QUE ses propres réservoirs
+-   Les réservoirs de User A n'apparaissent PAS
 
 ### Scénario de test 3 : Vérifier les statuts
 
@@ -232,8 +235,9 @@ Authorization: Bearer <TOKEN>
 ```
 
 **Résultat attendu** :
-- Le réservoir avec alerte CRITICAL affiche `"status": "CRITICAL"`
-- Les compteurs d'alertes reflètent : `"critical": 1`
+
+-   Le réservoir avec alerte CRITICAL affiche `"status": "CRITICAL"`
+-   Les compteurs d'alertes reflètent : `"critical": 1`
 
 ### Scénario de test 4 : Sans données
 
@@ -245,14 +249,15 @@ Authorization: Bearer <TOKEN_NEW_USER>
 ```
 
 **Résultat attendu** :
+
 ```json
 {
-  "reservoirs": [],
-  "alerts": {
-    "total": 0,
-    "critical": 0,
-    "warn": 0
-  }
+    "reservoirs": [],
+    "alerts": {
+        "total": 0,
+        "critical": 0,
+        "warn": 0
+    }
 }
 ```
 
@@ -263,33 +268,33 @@ Authorization: Bearer <TOKEN_NEW_USER>
 ```javascript
 // Nuxt 3 - Composable
 export const useDashboard = () => {
-  const { $api } = useNuxtApp()
-  
-  const fetchDashboard = async () => {
-    const response = await $api.get('/dashboard')
-    return response.data
-  }
-  
-  return { fetchDashboard }
-}
+    const { $api } = useNuxtApp();
+
+    const fetchDashboard = async () => {
+        const response = await $api.get("/dashboard");
+        return response.data;
+    };
+
+    return { fetchDashboard };
+};
 
 // Page dashboard
-const dashboard = await useDashboard().fetchDashboard()
+const dashboard = await useDashboard().fetchDashboard();
 // Afficher dashboard.reservoirs dans une grille
 // Afficher dashboard.alerts dans un widget d'alertes
 ```
 
 ### 2. Surveillance en temps réel
 
-- Rafraîchir le dashboard toutes les 30 secondes
-- Afficher une notification si `alerts.critical > 0`
-- Mettre en surbrillance les réservoirs en statut `CRITICAL`
+-   Rafraîchir le dashboard toutes les 30 secondes
+-   Afficher une notification si `alerts.critical > 0`
+-   Mettre en surbrillance les réservoirs en statut `CRITICAL`
 
 ### 3. Vue mobile
 
-- Liste scrollable des réservoirs
-- Badges colorés selon le statut (vert=OK, orange=WARN, rouge=CRITICAL)
-- Accès rapide aux alertes depuis le widget
+-   Liste scrollable des réservoirs
+-   Badges colorés selon le statut (vert=OK, orange=WARN, rouge=CRITICAL)
+-   Accès rapide aux alertes depuis le widget
 
 ## 🔍 Debugging
 
@@ -315,36 +320,38 @@ php bin/console debug:container DashboardProvider
 
 ### Erreurs courantes
 
-| Erreur | Cause | Solution |
-|--------|-------|----------|
-| `401 Unauthorized` | Pas de token JWT ou token expiré | Se ré-authentifier |
-| `RuntimeException: User must be authenticated` | Security ne retourne pas d'user | Vérifier la config JWT |
-| Pas de données | Aucun réservoir pour l'user | Créer des fermes/réservoirs |
-| `500 Internal Server Error` | Erreur SQL ou logique métier | Vérifier les logs Symfony |
+| Erreur                                         | Cause                            | Solution                    |
+| ---------------------------------------------- | -------------------------------- | --------------------------- |
+| `401 Unauthorized`                             | Pas de token JWT ou token expiré | Se ré-authentifier          |
+| `RuntimeException: User must be authenticated` | Security ne retourne pas d'user  | Vérifier la config JWT      |
+| Pas de données                                 | Aucun réservoir pour l'user      | Créer des fermes/réservoirs |
+| `500 Internal Server Error`                    | Erreur SQL ou logique métier     | Vérifier les logs Symfony   |
 
 ## 📚 Documentation API
 
 La documentation OpenAPI complète est disponible à :
+
 ```
 GET /api/docs
 ```
 
 Chercher l'endpoint `/api/dashboard` pour voir :
-- Le schéma de réponse détaillé
-- Les exemples de réponse
-- Les codes d'erreur possibles
+
+-   Le schéma de réponse détaillé
+-   Les exemples de réponse
+-   Les codes d'erreur possibles
 
 ## ✅ Checklist d'implémentation
 
-- [x] Création des DTOs (`DashboardResponse`, `ReservoirSummary`, `LastMeasurementView`, `AlertsSummary`)
-- [x] Création du Provider `DashboardProvider`
-- [x] Création de la ressource API Platform `Dashboard`
-- [x] Configuration de la sécurité (`ROLE_USER`)
-- [x] Documentation OpenAPI intégrée
-- [x] Calcul du statut basé sur les alertes
-- [x] Agrégation des compteurs d'alertes
-- [x] Récupération de la dernière mesure par réservoir
-- [x] Filtrage automatique par utilisateur
+-   [x] Création des DTOs (`DashboardResponse`, `ReservoirSummary`, `LastMeasurementView`, `AlertsSummary`)
+-   [x] Création du Provider `DashboardProvider`
+-   [x] Création de la ressource API Platform `Dashboard`
+-   [x] Configuration de la sécurité (`ROLE_USER`)
+-   [x] Documentation OpenAPI intégrée
+-   [x] Calcul du statut basé sur les alertes
+-   [x] Agrégation des compteurs d'alertes
+-   [x] Récupération de la dernière mesure par réservoir
+-   [x] Filtrage automatique par utilisateur
 
 ## 🚀 Prochaines étapes
 
@@ -356,14 +363,15 @@ Chercher l'endpoint `/api/dashboard` pour voir :
 
 ## 📝 Notes techniques
 
-- **Performance** : Le Provider fait 1 requête pour les réservoirs + 1 requête par réservoir pour la dernière mesure. Pour optimiser, on pourrait faire une seule requête avec un `LEFT JOIN` et `GROUP BY`.
-- **Cache** : Pas de cache pour l'instant, mais recommandé en production.
-- **Serialization** : Utilise les groupes `dashboard:read` pour contrôler la sortie JSON.
-- **API Platform** : Utilise un Provider custom plutôt qu'une extension Doctrine car c'est une agrégation cross-entity.
+-   **Performance** : Le Provider fait 1 requête pour les réservoirs + 1 requête par réservoir pour la dernière mesure. Pour optimiser, on pourrait faire une seule requête avec un `LEFT JOIN` et `GROUP BY`.
+-   **Cache** : Pas de cache pour l'instant, mais recommandé en production.
+-   **Serialization** : Utilise les groupes `dashboard:read` pour contrôler la sortie JSON.
+-   **API Platform** : Utilise un Provider custom plutôt qu'une extension Doctrine car c'est une agrégation cross-entity.
 
 ## 📞 Support
 
 Pour toute question ou problème :
+
 1. Vérifier les logs Symfony : `var/log/dev.log`
 2. Vérifier la documentation OpenAPI : `/api/docs`
 3. Consulter les issues GitHub du projet

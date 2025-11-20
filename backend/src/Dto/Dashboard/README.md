@@ -36,25 +36,25 @@ DashboardResponse
 
 ```json
 {
-  "reservoirs": [
-    {
-      "id": 1,
-      "name": "Bac salade A",
-      "farmName": "Ferme Nord",
-      "lastMeasurement": {
-        "measuredAt": "2025-01-10T08:30:00+00:00",
-        "ph": 5.9,
-        "ec": 1.5,
-        "waterTemp": 20.3
-      },
-      "status": "OK"
+    "reservoirs": [
+        {
+            "id": 1,
+            "name": "Bac salade A",
+            "farmName": "Ferme Nord",
+            "lastMeasurement": {
+                "measuredAt": "2025-01-10T08:30:00+00:00",
+                "ph": 5.9,
+                "ec": 1.5,
+                "waterTemp": 20.3
+            },
+            "status": "OK"
+        }
+    ],
+    "alerts": {
+        "total": 3,
+        "critical": 1,
+        "warn": 2
     }
-  ],
-  "alerts": {
-    "total": 3,
-    "critical": 1,
-    "warn": 2
-  }
 }
 ```
 
@@ -65,12 +65,14 @@ Tous les DTOs utilisent le groupe `dashboard:read` pour la normalisation JSON.
 ## Utilisation
 
 Ces DTOs sont utilisés exclusivement par :
-- **Provider** : `App\State\DashboardProvider`
-- **Ressource** : `App\ApiResource\Dashboard`
-- **Endpoint** : `GET /api/dashboard`
+
+-   **Provider** : `App\State\DashboardProvider`
+-   **Ressource** : `App\ApiResource\Dashboard`
+-   **Endpoint** : `GET /api/dashboard`
 
 ## Documentation
 
 Voir la documentation complète dans :
-- `docs/EPIC-2-DASHBOARD-IMPLEMENTATION.md`
-- `docs/TESTING-DASHBOARD-API.md`
+
+-   `docs/EPIC-2-DASHBOARD-IMPLEMENTATION.md`
+-   `docs/TESTING-DASHBOARD-API.md`

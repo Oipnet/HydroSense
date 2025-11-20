@@ -13,22 +13,25 @@
 **Fichiers créés** :
 
 1. **`src/Dto/Dashboard/LastMeasurementView.php`**
-   - Représente la dernière mesure d'un réservoir
-   - Propriétés : `measuredAt`, `ph`, `ec`, `waterTemp`
-   - Groupe de sérialisation : `dashboard:read`
+
+    - Représente la dernière mesure d'un réservoir
+    - Propriétés : `measuredAt`, `ph`, `ec`, `waterTemp`
+    - Groupe de sérialisation : `dashboard:read`
 
 2. **`src/Dto/Dashboard/ReservoirSummary.php`**
-   - Résumé d'un réservoir avec son statut
-   - Propriétés : `id`, `name`, `farmName`, `lastMeasurement`, `status`
-   - Statut : `"OK"`, `"WARN"`, ou `"CRITICAL"`
+
+    - Résumé d'un réservoir avec son statut
+    - Propriétés : `id`, `name`, `farmName`, `lastMeasurement`, `status`
+    - Statut : `"OK"`, `"WARN"`, ou `"CRITICAL"`
 
 3. **`src/Dto/Dashboard/AlertsSummary.php`**
-   - Agrégation des compteurs d'alertes
-   - Propriétés : `total`, `critical`, `warn`
+
+    - Agrégation des compteurs d'alertes
+    - Propriétés : `total`, `critical`, `warn`
 
 4. **`src/Dto/Dashboard/DashboardResponse.php`**
-   - DTO principal de réponse
-   - Propriétés : `reservoirs[]` (ReservoirSummary), `alerts` (AlertsSummary)
+    - DTO principal de réponse
+    - Propriétés : `reservoirs[]` (ReservoirSummary), `alerts` (AlertsSummary)
 
 ---
 
@@ -43,31 +46,36 @@
 **Logique** :
 
 1. **Récupération de l'utilisateur authentifié**
-   ```php
-   $user = $this->security->getUser();
-   ```
+
+    ```php
+    $user = $this->security->getUser();
+    ```
 
 2. **Chargement des réservoirs de l'utilisateur**
-   - Requête Doctrine avec `JOIN` sur `farm.owner`
-   - Filtre automatique par utilisateur connecté
+
+    - Requête Doctrine avec `JOIN` sur `farm.owner`
+    - Filtre automatique par utilisateur connecté
 
 3. **Récupération des alertes non résolues**
-   ```php
-   $unresolvedAlerts = $this->alertRepository->findUnresolvedForUser($user);
-   ```
+
+    ```php
+    $unresolvedAlerts = $this->alertRepository->findUnresolvedForUser($user);
+    ```
 
 4. **Pour chaque réservoir** :
-   - Récupère la dernière mesure (ORDER BY measuredAt DESC, LIMIT 1)
-   - Calcule le statut basé sur les alertes :
-     - CRITICAL si au moins 1 alerte CRITICAL
-     - WARN si au moins 1 alerte WARN (sans CRITICAL)
-     - OK sinon
+
+    - Récupère la dernière mesure (ORDER BY measuredAt DESC, LIMIT 1)
+    - Calcule le statut basé sur les alertes :
+        - CRITICAL si au moins 1 alerte CRITICAL
+        - WARN si au moins 1 alerte WARN (sans CRITICAL)
+        - OK sinon
 
 5. **Agrégation des alertes**
-   - Compte total, critical, warn
+
+    - Compte total, critical, warn
 
 6. **Construction de la réponse**
-   - Retourne un objet `DashboardResponse`
+    - Retourne un objet `DashboardResponse`
 
 ---
 
@@ -79,19 +87,19 @@
 
 **Configuration** :
 
-- **URI** : `/api/dashboard`
-- **Méthode** : `GET` uniquement
-- **Sécurité** : `is_granted('ROLE_USER')`
-- **Provider** : `DashboardProvider::class`
-- **Normalisation** : Groupe `dashboard:read`
-- **Output** : `DashboardResponse::class`
+-   **URI** : `/api/dashboard`
+-   **Méthode** : `GET` uniquement
+-   **Sécurité** : `is_granted('ROLE_USER')`
+-   **Provider** : `DashboardProvider::class`
+-   **Normalisation** : Groupe `dashboard:read`
+-   **Output** : `DashboardResponse::class`
 
 **Documentation OpenAPI** :
 
-- Summary : "Get dashboard overview"
-- Description complète de l'endpoint
-- Schéma de réponse détaillé avec exemples
-- Codes d'erreur : 200 (OK), 401 (Unauthorized)
+-   Summary : "Get dashboard overview"
+-   Description complète de l'endpoint
+-   Schéma de réponse détaillé avec exemples
+-   Codes d'erreur : 200 (OK), 401 (Unauthorized)
 
 ---
 
@@ -100,22 +108,24 @@
 **Fichiers créés** :
 
 1. **`docs/EPIC-2-DASHBOARD-IMPLEMENTATION.md`**
-   - Documentation complète de l'implémentation
-   - Logique métier détaillée
-   - Cas d'usage et exemples
-   - Guide de debugging
+
+    - Documentation complète de l'implémentation
+    - Logique métier détaillée
+    - Cas d'usage et exemples
+    - Guide de debugging
 
 2. **`docs/TESTING-DASHBOARD-API.md`**
-   - Guide de test rapide avec curl
-   - Scénarios de test (user avec/sans données, isolation)
-   - Checklist de vérification
-   - Dépannage
+
+    - Guide de test rapide avec curl
+    - Scénarios de test (user avec/sans données, isolation)
+    - Checklist de vérification
+    - Dépannage
 
 3. **`docs/ISSUE-13-COMPLETE.md`**
-   - Récapitulatif complet de l'implémentation
-   - Liste des fichiers créés
-   - Architecture du système
-   - Checklist finale
+    - Récapitulatif complet de l'implémentation
+    - Liste des fichiers créés
+    - Architecture du système
+    - Checklist finale
 
 ---
 
@@ -458,6 +468,7 @@ php bin/console debug:router | grep dashboard
 ```
 
 **Résultat attendu** :
+
 ```
 _api_/dashboard_get    GET    ANY    ANY    /api/dashboard
 ```
@@ -480,25 +491,25 @@ curl -X GET http://localhost:8000/api/dashboard \
 
 ```json
 {
-  "reservoirs": [
-    {
-      "id": 1,
-      "name": "Bac salade A",
-      "farmName": "Ferme Nord",
-      "lastMeasurement": {
-        "measuredAt": "2025-01-10T08:30:00+00:00",
-        "ph": 5.9,
-        "ec": 1.5,
-        "waterTemp": 20.3
-      },
-      "status": "OK"
+    "reservoirs": [
+        {
+            "id": 1,
+            "name": "Bac salade A",
+            "farmName": "Ferme Nord",
+            "lastMeasurement": {
+                "measuredAt": "2025-01-10T08:30:00+00:00",
+                "ph": 5.9,
+                "ec": 1.5,
+                "waterTemp": 20.3
+            },
+            "status": "OK"
+        }
+    ],
+    "alerts": {
+        "total": 3,
+        "critical": 1,
+        "warn": 2
     }
-  ],
-  "alerts": {
-    "total": 3,
-    "critical": 1,
-    "warn": 2
-  }
 }
 ```
 
@@ -512,7 +523,7 @@ curl -X GET http://localhost:8000/api/dashboard \
 ✅ **Route enregistrée** : `GET /api/dashboard`  
 ✅ **Sécurité** : `ROLE_USER` requis  
 ✅ **Documentation** : OpenAPI + guides complets  
-✅ **Tests** : Guide de test avec curl fourni  
+✅ **Tests** : Guide de test avec curl fourni
 
 L'endpoint est **prêt à être utilisé** ! 🚀
 
@@ -520,10 +531,10 @@ L'endpoint est **prêt à être utilisé** ! 🚀
 
 ## 📚 Documentation complète
 
-- [EPIC-2-DASHBOARD-IMPLEMENTATION.md](./docs/EPIC-2-DASHBOARD-IMPLEMENTATION.md) - Documentation technique complète
-- [TESTING-DASHBOARD-API.md](./docs/TESTING-DASHBOARD-API.md) - Guide de test avec curl
-- [ISSUE-13-COMPLETE.md](./docs/ISSUE-13-COMPLETE.md) - Récapitulatif de l'issue
-- [OpenAPI Docs](http://localhost:8000/api/docs) - Documentation API interactive
+-   [EPIC-2-DASHBOARD-IMPLEMENTATION.md](./docs/EPIC-2-DASHBOARD-IMPLEMENTATION.md) - Documentation technique complète
+-   [TESTING-DASHBOARD-API.md](./docs/TESTING-DASHBOARD-API.md) - Guide de test avec curl
+-   [ISSUE-13-COMPLETE.md](./docs/ISSUE-13-COMPLETE.md) - Récapitulatif de l'issue
+-   [OpenAPI Docs](http://localhost:8000/api/docs) - Documentation API interactive
 
 ---
 
