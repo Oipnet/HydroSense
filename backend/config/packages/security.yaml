@@ -45,11 +45,8 @@ security:
     access_control:
         - { path: ^/api/auth/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
-        - { path: ^/api/swagger, roles: PUBLIC_ACCESS }
         - { path: ^/api$, roles: PUBLIC_ACCESS }
-        - { path: ^/api\.json$, roles: PUBLIC_ACCESS }
-        - { path: ^/api\.jsonld$, roles: PUBLIC_ACCESS }
-        - { path: ^/api/contexts/, roles: PUBLIC_ACCESS }
+        - { path: ^/api/culture_profiles, roles: PUBLIC_ACCESS, methods: [GET] }
         - { path: ^/api/me, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/admin, roles: ROLE_ADMIN }
