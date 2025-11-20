@@ -41,23 +41,28 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(
             security: "is_granted('ROLE_USER') and object.getReservoir().getFarm().getOwner() == user",
-            normalizationContext: ['groups' => ['journal:read', 'journal:item']]
+            normalizationContext: ['groups' => ['journal:read', 'journal:item']],
+            description: 'Retrieve detailed information about a single journal entry.'
         ),
         new GetCollection(
             security: "is_granted('ROLE_USER')",
-            normalizationContext: ['groups' => ['journal:read']]
+            normalizationContext: ['groups' => ['journal:read']],
+            description: 'Retrieve all journal entries for reservoirs owned by the authenticated user.'
         ),
         new Post(
             security: "is_granted('ROLE_USER')",
             denormalizationContext: ['groups' => ['journal:write']],
-            securityPostDenormalize: "is_granted('ROLE_USER') and object.getReservoir().getFarm().getOwner() == user"
+            securityPostDenormalize: "is_granted('ROLE_USER') and object.getReservoir().getFarm().getOwner() == user",
+            description: 'Add a new cultivation note to a reservoir. Optionally include a photo URL.'
         ),
         new Put(
             security: "is_granted('ROLE_USER') and object.getReservoir().getFarm().getOwner() == user",
-            denormalizationContext: ['groups' => ['journal:write']]
+            denormalizationContext: ['groups' => ['journal:write']],
+            description: 'Update the content or photo URL of an existing journal entry.'
         ),
         new Delete(
-            security: "is_granted('ROLE_USER') and object.getReservoir().getFarm().getOwner() == user"
+            security: "is_granted('ROLE_USER') and object.getReservoir().getFarm().getOwner() == user",
+            description: 'Permanently delete a journal entry.'
         )
     ]
 )]

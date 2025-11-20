@@ -29,23 +29,28 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(
             security: "is_granted('ROLE_USER') and object.farm.owner == user",
-            normalizationContext: ['groups' => ['reservoir:read', 'reservoir:item']]
+            normalizationContext: ['groups' => ['reservoir:read', 'reservoir:item']],
+            description: 'Retrieve detailed information about a reservoir including its measurements and journal entries.'
         ),
         new GetCollection(
             security: "is_granted('ROLE_USER')",
-            normalizationContext: ['groups' => ['reservoir:read']]
+            normalizationContext: ['groups' => ['reservoir:read']],
+            description: 'Retrieve all reservoirs from farms owned by the authenticated user. Results are automatically filtered by ownership.'
         ),
         new Post(
             security: "is_granted('ROLE_USER')",
             denormalizationContext: ['groups' => ['reservoir:write']],
-            securityPostDenormalize: "is_granted('ROLE_USER') and object.farm.owner == user"
+            securityPostDenormalize: "is_granted('ROLE_USER') and object.farm.owner == user",
+            description: 'Create a new nutrient tank/reservoir within one of your farms.'
         ),
         new Put(
             security: "is_granted('ROLE_USER') and object.farm.owner == user",
-            denormalizationContext: ['groups' => ['reservoir:write']]
+            denormalizationContext: ['groups' => ['reservoir:write']],
+            description: 'Update reservoir details. Only the reservoir owner can perform this action.'
         ),
         new Delete(
-            security: "is_granted('ROLE_USER') and object.farm.owner == user"
+            security: "is_granted('ROLE_USER') and object.farm.owner == user",
+            description: 'Permanently delete a reservoir and all its associated measurements, alerts, and journal entries.'
         ),
         new Post(
             uriTemplate: '/reservoirs/{id}/measurements/import',

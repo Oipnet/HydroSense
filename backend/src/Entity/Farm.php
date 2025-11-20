@@ -27,24 +27,29 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(
             security: "is_granted('ROLE_USER')",
-            normalizationContext: ['groups' => ['farm:read']]
+            normalizationContext: ['groups' => ['farm:read']],
+            description: 'Retrieve all farms owned by the authenticated user. Results are automatically filtered by ownership.'
         ),
         new Get(
             security: "is_granted('ROLE_USER') and object.owner == user",
-            normalizationContext: ['groups' => ['farm:read', 'farm:item']]
+            normalizationContext: ['groups' => ['farm:read', 'farm:item']],
+            description: 'Retrieve detailed information about a single farm including its reservoirs and culture profile.'
         ),
         new Post(
             security: "is_granted('ROLE_USER')",
             processor: FarmProcessor::class,
             denormalizationContext: ['groups' => ['farm:write']],
-            securityPostDenormalize: "is_granted('ROLE_USER') and object.owner == user"
+            securityPostDenormalize: "is_granted('ROLE_USER') and object.owner == user",
+            description: 'Create a new farm for the authenticated user. The farm will be automatically assigned to the current user.'
         ),
         new Put(
             security: "is_granted('ROLE_USER') and object.owner == user",
-            denormalizationContext: ['groups' => ['farm:write']]
+            denormalizationContext: ['groups' => ['farm:write']],
+            description: 'Update farm details. Only the farm owner can perform this action.'
         ),
         new Delete(
-            security: "is_granted('ROLE_USER') and object.owner == user"
+            security: "is_granted('ROLE_USER') and object.owner == user",
+            description: 'Permanently delete a farm and all its associated reservoirs. Only the farm owner can perform this action.'
         )
     ],
     paginationEnabled: true

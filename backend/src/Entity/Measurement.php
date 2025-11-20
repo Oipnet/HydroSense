@@ -46,30 +46,36 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(
             security: "is_granted('ROLE_USER') and object.getReservoir().getFarm().getOwner() == user",
-            normalizationContext: ['groups' => ['measurement:read', 'measurement:item']]
+            normalizationContext: ['groups' => ['measurement:read', 'measurement:item']],
+            description: 'Retrieve detailed information about a single measurement including reservoir details.'
         ),
         new GetCollection(
             security: "is_granted('ROLE_USER')",
-            normalizationContext: ['groups' => ['measurement:read']]
+            normalizationContext: ['groups' => ['measurement:read']],
+            description: 'Retrieve all measurements from reservoirs owned by the authenticated user. Use filters: ?measuredAt[after]=2025-01-01, ?reservoir=/api/reservoirs/1'
         ),
         new Post(
             security: "is_granted('ROLE_USER')",
             processor: MeasurementPostProcessor::class,
-            denormalizationContext: ['groups' => ['measurement:write']]
+            denormalizationContext: ['groups' => ['measurement:write']],
+            description: 'Record a new measurement for a reservoir. Alerts will be automatically generated if values fall outside acceptable ranges defined in the culture profile.'
         ),
         new Post(
             uriTemplate: '/reservoirs/{id}/measurements',
             security: "is_granted('ROLE_USER')",
             processor: MeasurementPostProcessor::class,
             denormalizationContext: ['groups' => ['measurement:write:custom']],
-            name: 'reservoir_add_measurement'
+            name: 'reservoir_add_measurement',
+            description: 'Shortcut endpoint to record a measurement for a specific reservoir without specifying the reservoir IRI in the payload.'
         ),
         new Put(
             security: "is_granted('ROLE_USER') and object.getReservoir().getFarm().getOwner() == user",
-            denormalizationContext: ['groups' => ['measurement:write']]
+            denormalizationContext: ['groups' => ['measurement:write']],
+            description: 'Update measurement values. Only the owner can perform this action. Alerts will be recalculated.'
         ),
         new Delete(
-            security: "is_granted('ROLE_ADMIN')"
+            security: "is_granted('ROLE_ADMIN')",
+            description: 'Permanently delete a measurement. Admin role required.'
         )
     ]
 )]
@@ -100,16 +106,19 @@ class Measurement
     #[ORM\Column(nullable: true)]
     #[Groups(['measurement:read', 'measurement:write', 'measurement:write:custom'])]
     #[Assert\Range(min: 0, max: 14, notInRangeMessage: 'pH must be between {{ min }} and {{ max }}')]
+    #[ApiProperty(description: 'pH level of the nutrient solution (scale 0-14, optimal range typically 5.5-6.5 for hydroponics)', example: 6.2)]
     private ?float $ph = null;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['measurement:read', 'measurement:write', 'measurement:write:custom'])]
     #[Assert\Positive(message: 'EC must be a positive value')]
+    #[ApiProperty(description: 'Electrical conductivity in mS/cm, indicates nutrient concentration (typical range 1.0-2.5 mS/cm)', example: 1.8)]
     private ?float $ec = null;
 
     #[ORM\Column(nullable: true)]
     #[Groups(['measurement:read', 'measurement:write', 'measurement:write:custom'])]
     #[Assert\Range(min: -10, max: 50, notInRangeMessage: 'Water temperature must be between {{ min }}°C and {{ max }}°C')]
+    #[ApiProperty(description: 'Water temperature in degrees Celsius (optimal range typically 18-22°C)', example: 21.5)]
     private ?float $waterTemp = null;
 
     #[ORM\Column(length: 50)]

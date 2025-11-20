@@ -55,16 +55,19 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Get(
             security: "is_granted('ROLE_USER') and object.getReservoir().getFarm().getOwner() == user",
-            normalizationContext: ['groups' => ['alert:read', 'alert:item']]
+            normalizationContext: ['groups' => ['alert:read', 'alert:item']],
+            description: 'Retrieve detailed information about a single alert including the triggering measurement.'
         ),
         new GetCollection(
             security: "is_granted('ROLE_USER')",
             normalizationContext: ['groups' => ['alert:read']],
-            order: ['createdAt' => 'DESC']
+            order: ['createdAt' => 'DESC'],
+            description: 'Retrieve all alerts for reservoirs owned by the authenticated user. Use filters: ?resolved=false, ?severity=CRITICAL, ?type=PH_OUT_OF_RANGE, ?createdAt[after]=2025-01-01'
         ),
         new Patch(
             security: "is_granted('ROLE_USER') and object.getReservoir().getFarm().getOwner() == user",
-            denormalizationContext: ['groups' => ['alert:update']]
+            denormalizationContext: ['groups' => ['alert:update']],
+            description: 'Mark an alert as resolved by setting the resolvedAt timestamp.'
         )
     ],
     paginationEnabled: true,
