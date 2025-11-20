@@ -153,9 +153,16 @@ class Reservoir
     #[Groups(['reservoir:item'])]
     private Collection $measurements;
 
+    /**
+     * @var Collection<int, Alert>
+     */
+    #[ORM\OneToMany(targetEntity: Alert::class, mappedBy: 'reservoir', orphanRemoval: true)]
+    private Collection $alerts;
+
     public function __construct()
     {
         $this->measurements = new ArrayCollection();
+        $this->alerts = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
@@ -279,6 +286,36 @@ class Reservoir
             // set the owning side to null (unless already changed)
             if ($measurement->getReservoir() === $this) {
                 $measurement->setReservoir(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Alert>
+     */
+    public function getAlerts(): Collection
+    {
+        return $this->alerts;
+    }
+
+    public function addAlert(Alert $alert): static
+    {
+        if (!$this->alerts->contains($alert)) {
+            $this->alerts->add($alert);
+            $alert->setReservoir($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAlert(Alert $alert): static
+    {
+        if ($this->alerts->removeElement($alert)) {
+            // set the owning side to null (unless already changed)
+            if ($alert->getReservoir() === $this) {
+                $alert->setReservoir(null);
             }
         }
 
