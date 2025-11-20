@@ -8,7 +8,7 @@ Application frontend pour HydroSense, construite avec Nuxt 4, TypeScript, Pinia 
 - **Language**: TypeScript (strict mode)
 - **State Management**: Pinia
 - **Styling**: TailwindCSS 3
-- **API Client**: Custom composable avec $fetch
+- **API Client**: openapi-fetch (type-safe, auto-generated from OpenAPI spec)
 
 ## 📋 Prérequis
 
@@ -49,22 +49,32 @@ L'application sera accessible sur `http://localhost:3000`
 
 ```
 frontend/
+├── app/                      # Nuxt 4 app directory
+│   ├── composables/
+│   │   ├── useApi.ts         # Composable API legacy (deprecated)
+│   │   ├── useReservoirs.ts  # Composable Reservoirs (typed)
+│   │   └── useMeasurements.ts # Composable Measurements (typed)
+│   ├── layouts/
+│   │   └── default.vue       # Layout par défaut
+│   ├── lib/
+│   │   └── api/
+│   │       ├── schema.d.ts   # Types générés depuis OpenAPI (auto)
+│   │       ├── client.ts     # Client API type-safe
+│   │       ├── README.md     # Documentation API client
+│   │       └── QUICKSTART.md # Guide rapide
+│   ├── pages/
+│   │   ├── index.vue         # Page d'accueil
+│   │   └── api-demo.vue      # Démonstration API client
+│   ├── stores/
+│   │   ├── useUiStore.ts     # Store UI (sidebar, theme, notifs)
+│   │   └── useCounterStore.ts # Store exemple (à supprimer)
+│   └── app.vue               # Point d'entrée de l'app
 ├── assets/
 │   └── css/
 │       └── main.css          # Styles Tailwind + customs
-├── components/                # Composants Vue réutilisables
-├── composables/
-│   └── useApi.ts             # Composable pour appels API
-├── layouts/
-│   └── default.vue           # Layout par défaut
-├── pages/
-│   └── index.vue             # Page d'accueil
-├── stores/
-│   ├── useUiStore.ts         # Store UI (sidebar, theme, notifs)
-│   └── useCounterStore.ts    # Store exemple (à supprimer)
+├── public/                   # Assets statiques
 ├── .env.example              # Template des variables d'env
 ├── .gitignore
-├── app.vue                   # Point d'entrée de l'app
 ├── nuxt.config.ts            # Configuration Nuxt
 ├── package.json
 ├── tailwind.config.ts        # Configuration Tailwind
@@ -85,28 +95,83 @@ Classes utilitaires personnalisées disponibles :
 
 ## 🔌 API Integration
 
-### Utiliser le composable `useApi()`
+### Client API Type-Safe (OpenAPI)
 
-```typescript
-// Dans un composant ou une page
-const api = useApi();
+Le projet utilise un client API généré automatiquement depuis la spec OpenAPI du backend.
 
-// GET request
-const farms = await api.get("/api/farms");
+#### Générer le client
 
-// POST request
-const newFarm = await api.post("/api/farms", {
-  name: "Ma Ferme",
-  location: "Lyon",
-});
-
-// PUT/PATCH/DELETE
-await api.put("/api/farms/1", data);
-await api.patch("/api/farms/1", partialData);
-await api.delete("/api/farms/1");
+```bash
+# Générer les types TypeScript depuis la spec OpenAPI
+npm run generate:api
 ```
 
-Le composable utilise automatiquement `NUXT_PUBLIC_API_BASE_URL` configurée dans `.env`.
+Cela crée `lib/api/schema.d.ts` avec tous les types de l'API.
+
+#### Utiliser les composables typés
+
+```typescript
+// Endpoint public (pas d'auth requise)
+const { data: profiles, pending, error, refresh } = await useCultureProfiles();
+
+// Endpoints protégés (nécessitent JWT - à implémenter)
+const {
+  data: reservoirs,
+  pending,
+  error,
+  refresh,
+} = await useReservoirs({
+  page: 1,
+  itemsPerPage: 30,
+});
+
+// Single item
+const { data: reservoir } = await useReservoir(1);
+
+// Create
+const newReservoir = await createReservoir({
+  name: "Basin A",
+  capacity: 1000,
+  farm: "/api/farms/1",
+});
+
+// Update
+await updateReservoir(1, { capacity: 1500 });
+
+// Delete
+await deleteReservoir(1);
+```
+
+#### Utiliser le client directement
+
+```typescript
+import { useApiClient } from "~/lib/api/client";
+
+const api = useApiClient();
+
+// Tous les appels sont fully typed
+const { data, error } = await api.GET("/api/reservoirs", {
+  params: {
+    query: {
+      page: 1,
+      itemsPerPage: 30,
+    },
+  },
+});
+```
+
+**Avantages :**
+
+- ✅ **Type safety complet** : Autocomplete et validation TypeScript
+- ✅ **Sync avec backend** : Types générés depuis la spec OpenAPI
+- ✅ **Léger** : ~5KB (gzip) avec openapi-fetch
+- ✅ **SSR ready** : Compatible avec useAsyncData
+
+**Documentation complète :**
+
+- [lib/api/README.md](./lib/api/README.md) - Documentation détaillée
+- [lib/api/QUICKSTART.md](./lib/api/QUICKSTART.md) - Guide rapide
+- [backend/docs/ISSUE-16-OPENAPI-CLIENT.md](../backend/docs/ISSUE-16-OPENAPI-CLIENT.md) - Détails d'implémentation
 
 ## 📦 Pinia Stores
 
@@ -150,6 +215,9 @@ npm run typecheck
 
 # Generate static site
 npm run generate
+
+# Générer le client API depuis OpenAPI
+npm run generate:api
 ```
 
 ## ✅ Tests de Validation
@@ -179,7 +247,7 @@ npm run generate
 
 ## 🔜 Prochaines Étapes
 
-- [ ] Générer le client OpenAPI depuis le backend Symfony
+- [x] Générer le client OpenAPI depuis le backend Symfony ✅
 - [ ] Créer les pages métier (Dashboard, Farms, Reservoirs, etc.)
 - [ ] Implémenter l'authentification JWT
 - [ ] Ajouter les composants de formulaires
