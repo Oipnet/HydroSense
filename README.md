@@ -1,13 +1,15 @@
-# HydroSense
+# HydroSense 🌱
 
-Système de monitoring et d'analyse pour l'hydroponie.
+**Plateforme intelligente de gestion des nutriments hydroponiques**
+
+HydroSense est une solution complète de monitoring et d'optimisation pour les systèmes de culture hydroponique. Elle permet de surveiller en temps réel les paramètres nutritionnels, d'analyser les données de croissance et d'optimiser les cycles de culture.
 
 ## 🎯 À Propos
 
 HydroSense est un monorepo contenant :
-- **Backend** : API Symfony 7 + API Platform
-- **Frontend** : Application Nuxt 3
-- **Infrastructure** : Configuration Docker et déploiement
+- **Backend** (`backend/`) : API REST avec Symfony 7 + API Platform pour la gestion des données de capteurs, nutriments et cycles de culture
+- **Frontend** (`frontend/`) : Interface utilisateur moderne développée avec Nuxt 3 pour le monitoring et la configuration
+- **Infrastructure** (`infra/`) : Configuration Docker et outils de déploiement pour un environnement de production robuste
 
 ## 📊 Structure du Projet
 
