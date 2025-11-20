@@ -2,33 +2,79 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use ApiPlatform\Metadata\Delete;
 use App\Repository\MeasurementRepository;
+use App\State\MeasurementPostProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Measurement represents a single measurement of pH, EC (electrical conductivity), 
+ * and water temperature for a reservoir at a specific point in time.
+ * 
+ * Measurements can be created:
+ * - Manually via API (source: MANUAL)
+ * - Via CSV import (source: CSV_IMPORT)
+ * - Via external API integration (source: API_INTEGRATION)
+ * 
+ * Security:
+ * - Users can only access measurements from reservoirs they own
+ * - Only admins can delete measurements
+ * 
+ * Date filtering:
+ * - Use ?measuredAt[after]=2025-01-01 for from date
+ * - Use ?measuredAt[before]=2025-01-31 for to date
+ * - Use ?measuredAt[strictly_after] and ?measuredAt[strictly_before] for exclusive bounds
+ * 
+ * Reservoir filtering:
+ * - Use ?reservoir=/api/reservoirs/{id} or ?reservoir={id}
+ * 
+ * @see MeasurementPostProcessor
+ * @see MeasurementQueryExtension
+ */
 #[ORM\Entity(repositoryClass: MeasurementRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(normalizationContext: ['groups' => ['measurement:read']]),
-        new GetCollection(normalizationContext: ['groups' => ['measurement:read']]),
+        new Get(
+            security: "is_granted('ROLE_USER') and object.getReservoir().getFarm().getOwner() == user",
+            normalizationContext: ['groups' => ['measurement:read', 'measurement:item']]
+        ),
+        new GetCollection(
+            security: "is_granted('ROLE_USER')",
+            normalizationContext: ['groups' => ['measurement:read']]
+        ),
         new Post(
-            denormalizationContext: ['groups' => ['measurement:write']],
-            securityPostDenormalize: "is_granted('ROLE_USER')"
+            security: "is_granted('ROLE_USER')",
+            processor: MeasurementPostProcessor::class,
+            denormalizationContext: ['groups' => ['measurement:write']]
+        ),
+        new Post(
+            uriTemplate: '/reservoirs/{id}/measurements',
+            security: "is_granted('ROLE_USER')",
+            processor: MeasurementPostProcessor::class,
+            denormalizationContext: ['groups' => ['measurement:write:custom']],
+            name: 'reservoir_add_measurement'
         ),
         new Put(
-            denormalizationContext: ['groups' => ['measurement:write']],
-            security: "is_granted('ROLE_USER')"
+            security: "is_granted('ROLE_USER') and object.getReservoir().getFarm().getOwner() == user",
+            denormalizationContext: ['groups' => ['measurement:write']]
         ),
-        new Delete(security: "is_granted('ROLE_ADMIN')")
+        new Delete(
+            security: "is_granted('ROLE_ADMIN')"
+        )
     ]
 )]
+#[ApiFilter(DateFilter::class, properties: ['measuredAt'])]
+#[ApiFilter(SearchFilter::class, properties: ['reservoir' => 'exact'])]
 class Measurement
 {
     public const SOURCE_MANUAL = 'MANUAL';
@@ -43,29 +89,31 @@ class Measurement
 
     #[ORM\ManyToOne(inversedBy: 'measurements')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['measurement:read', 'measurement:write'])]
-    #[Assert\NotNull]
+    #[Groups(['measurement:read', 'measurement:write', 'reservoir:item'])]
+    #[Assert\NotNull(groups: ['measurement:write'])]
     private ?Reservoir $reservoir = null;
 
     #[ORM\Column]
-    #[Groups(['measurement:read', 'measurement:write'])]
-    #[Assert\NotNull]
+    #[Groups(['measurement:read', 'measurement:write', 'measurement:write:custom'])]
     private ?\DateTimeImmutable $measuredAt = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['measurement:read', 'measurement:write'])]
+    #[Groups(['measurement:read', 'measurement:write', 'measurement:write:custom'])]
+    #[Assert\Range(min: 0, max: 14, notInRangeMessage: 'pH must be between {{ min }} and {{ max }}')]
     private ?float $ph = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['measurement:read', 'measurement:write'])]
+    #[Groups(['measurement:read', 'measurement:write', 'measurement:write:custom'])]
+    #[Assert\Positive(message: 'EC must be a positive value')]
     private ?float $ec = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['measurement:read', 'measurement:write'])]
+    #[Groups(['measurement:read', 'measurement:write', 'measurement:write:custom'])]
+    #[Assert\Range(min: -10, max: 50, notInRangeMessage: 'Water temperature must be between {{ min }}°C and {{ max }}°C')]
     private ?float $waterTemp = null;
 
     #[ORM\Column(length: 50)]
-    #[Groups(['measurement:read', 'measurement:write'])]
+    #[Groups(['measurement:read'])]
     #[Assert\Choice(choices: [self::SOURCE_MANUAL, self::SOURCE_CSV_IMPORT, self::SOURCE_API_INTEGRATION])]
     private string $source = self::SOURCE_MANUAL;
 
