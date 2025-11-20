@@ -120,9 +120,23 @@ backend/
 │   │   └── security.yaml          # Configuration sécurité
 │   ├── routes.yaml                # Routes de l'application
 │   └── jwt/                       # Clés JWT (privée/publique)
+├── docs/                          # 📖 Documentation technique
+│   ├── README.md                  # Index de la documentation
+│   ├── EPIC-2-CSV-IMPORT-IMPLEMENTATION.md
+│   ├── TESTING-CSV-IMPORT.md
+│   └── REFACTORING-STATE-PROCESSOR.md
+├── examples/                      # 📁 Fichiers d'exemple
+│   ├── measurements_sample.csv
+│   └── measurements_with_errors.csv
 ├── src/
 │   ├── Entity/                    # Entités Doctrine
+│   │   ├── Reservoir.php         # Gestion des réservoirs
+│   │   ├── Measurement.php       # Mesures (pH, EC, température)
 │   │   └── Sensor.php            # Exemple d'entité API Resource
+│   ├── Repository/               # Repositories Doctrine
+│   ├── State/                    # Providers & Processors API Platform
+│   ├── Service/                  # Services métier
+│   ├── Dto/                      # Data Transfer Objects
 │   └── Controller/               # Contrôleurs personnalisés
 ├── public/
 │   └── index.php                 # Point d'entrée
@@ -130,6 +144,14 @@ backend/
     ├── cache/                    # Cache Symfony
     └── log/                      # Logs
 ```
+
+## 📖 Documentation détaillée
+
+Pour une documentation technique complète, consultez le dossier **[`docs/`](./docs/README.md)** qui contient :
+
+-   **Import CSV des mesures** : Implémentation complète et guide de test
+-   **Architecture State Processor** : Documentation du pattern Provider/Processor
+-   **Guides de test** : Exemples curl et HTTPie
 
 ## 🔒 Sécurité et JWT
 
