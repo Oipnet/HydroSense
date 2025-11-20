@@ -3,6 +3,7 @@
 ## ✅ Implémentation complète
 
 ### 📋 Résumé
+
 L'entité `CultureProfile` a été créée avec succès pour fournir un référentiel de profils de cultures hydroponiques avec leurs plages idéales (pH, EC, température).
 
 ---
@@ -10,36 +11,43 @@ L'entité `CultureProfile` a été créée avec succès pour fournir un référe
 ## 🎯 Fichiers créés
 
 ### 1. Entité CultureProfile
+
 **Fichier** : `src/Entity/CultureProfile.php`
 
 **Champs** :
-- `id` (int, auto-increment)
-- `name` (string, unique, 100 caractères max)
-- `phMin` (float, 0-14)
-- `phMax` (float, 0-14)
-- `ecMin` (float, positif ou zéro, en mS/cm)
-- `ecMax` (float, positif, en mS/cm)
-- `waterTempMin` (float, 0-50°C)
-- `waterTempMax` (float, 0-50°C)
+
+-   `id` (int, auto-increment)
+-   `name` (string, unique, 100 caractères max)
+-   `phMin` (float, 0-14)
+-   `phMax` (float, 0-14)
+-   `ecMin` (float, positif ou zéro, en mS/cm)
+-   `ecMax` (float, positif, en mS/cm)
+-   `waterTempMin` (float, 0-50°C)
+-   `waterTempMax` (float, 0-50°C)
 
 **Caractéristiques** :
-- ✅ API Platform configuré en **lecture seule** (GET, GET collection)
-- ✅ Validation complète avec contraintes Symfony
-- ✅ Documentation PHPDoc détaillée
-- ✅ Typage strict (PHP 8.2+)
-- ✅ Pagination activée (30 items par page)
+
+-   ✅ API Platform configuré en **lecture seule** (GET, GET collection)
+-   ✅ Validation complète avec contraintes Symfony
+-   ✅ Documentation PHPDoc détaillée
+-   ✅ Typage strict (PHP 8.2+)
+-   ✅ Pagination activée (30 items par page)
 
 ### 2. Repository
+
 **Fichier** : `src/Repository/CultureProfileRepository.php`
 
 **Méthodes utiles** :
-- `findByName(string $name)` - Recherche par nom exact
-- `findAllOrderedByName()` - Liste triée alphabétiquement
+
+-   `findByName(string $name)` - Recherche par nom exact
+-   `findAllOrderedByName()` - Liste triée alphabétiquement
 
 ### 3. Fixtures
+
 **Fichier** : `src/DataFixtures/CultureProfileFixtures.php`
 
 **14 profils de cultures inclus** :
+
 1. Laitue
 2. Basilic
 3. Fraises
@@ -58,17 +66,21 @@ L'entité `CultureProfile` a été créée avec succès pour fournir un référe
 Les valeurs sont basées sur des recommandations professionnelles d'hydroponie.
 
 ### 4. Migration
+
 **Fichier** : `migrations/Version20251120100452.php`
 
 Crée la table `culture_profile` avec :
-- Tous les champs nécessaires
-- Index unique sur le nom
-- Support SQLite (actuel) et extensible aux autres SGBD
+
+-   Tous les champs nécessaires
+-   Index unique sur le nom
+-   Support SQLite (actuel) et extensible aux autres SGBD
 
 ### 5. Configuration de sécurité
+
 **Fichier** : `config/packages/security.yaml`
 
 Ajout de la règle d'accès public :
+
 ```yaml
 - { path: ^/api/culture_profiles, roles: PUBLIC_ACCESS, methods: [GET] }
 ```
@@ -98,11 +110,13 @@ php bin/console doctrine:fixtures:load --no-interaction
 ### Endpoints API disponibles
 
 #### 1. Liste des profils (Collection)
+
 ```http
 GET http://localhost:8000/api/culture_profiles
 ```
 
 **Réponse** : HTTP 200 OK
+
 ```json
 [
   {
@@ -120,6 +134,7 @@ GET http://localhost:8000/api/culture_profiles
 ```
 
 #### 2. Profil individuel
+
 ```http
 GET http://localhost:8000/api/culture_profiles/{id}
 ```
@@ -127,20 +142,22 @@ GET http://localhost:8000/api/culture_profiles/{id}
 **Exemple** : `GET http://localhost:8000/api/culture_profiles/1`
 
 **Réponse** : HTTP 200 OK
+
 ```json
 {
-  "id": 1,
-  "name": "Laitue",
-  "phMin": 5.5,
-  "phMax": 6.5,
-  "ecMin": 0.8,
-  "ecMax": 1.2,
-  "waterTempMin": 15.0,
-  "waterTempMax": 20.0
+    "id": 1,
+    "name": "Laitue",
+    "phMin": 5.5,
+    "phMax": 6.5,
+    "ecMin": 0.8,
+    "ecMax": 1.2,
+    "waterTempMin": 15.0,
+    "waterTempMax": 20.0
 }
 ```
 
 ### Tests via PowerShell
+
 ```powershell
 # Test collection
 curl http://localhost:8000/api/culture_profiles
@@ -153,11 +170,13 @@ curl http://localhost:8000/api/culture_profiles/1
 ```
 
 ### Tests via navigateur
-- Collection : `http://localhost:8000/api/culture_profiles`
-- Item : `http://localhost:8000/api/culture_profiles/1`
-- Documentation OpenAPI : `http://localhost:8000/api/docs`
+
+-   Collection : `http://localhost:8000/api/culture_profiles`
+-   Item : `http://localhost:8000/api/culture_profiles/1`
+-   Documentation OpenAPI : `http://localhost:8000/api/docs`
 
 ### Tests via Postman/Insomnia
+
 1. Créer une requête GET
 2. URL : `http://localhost:8000/api/culture_profiles`
 3. Aucune authentification nécessaire
@@ -167,37 +186,39 @@ curl http://localhost:8000/api/culture_profiles/1
 
 ## ✅ Acceptance Criteria - Validation
 
-| Critère | Status | Détails |
-|---------|--------|---------|
-| `GET /api/culture_profiles` retourne une liste | ✅ | 14 profils retournés |
-| Champs min/max correctement typés | ✅ | Tous en float |
-| Champs exposés dans l'API | ✅ | Tous visibles dans JSON |
-| Lecture seule | ✅ | Pas de POST/PUT/DELETE |
-| Validation des données | ✅ | Contraintes Assert actives |
-| Documentation OpenAPI | ✅ | Généré automatiquement |
+| Critère                                        | Status | Détails                    |
+| ---------------------------------------------- | ------ | -------------------------- |
+| `GET /api/culture_profiles` retourne une liste | ✅     | 14 profils retournés       |
+| Champs min/max correctement typés              | ✅     | Tous en float              |
+| Champs exposés dans l'API                      | ✅     | Tous visibles dans JSON    |
+| Lecture seule                                  | ✅     | Pas de POST/PUT/DELETE     |
+| Validation des données                         | ✅     | Contraintes Assert actives |
+| Documentation OpenAPI                          | ✅     | Généré automatiquement     |
 
 ---
 
 ## 📊 Structure de données - Exemple
 
 ### Laitue (profil complet)
+
 ```json
 {
-  "id": 1,
-  "name": "Laitue",
-  "phMin": 5.5,
-  "phMax": 6.5,
-  "ecMin": 0.8,
-  "ecMax": 1.2,
-  "waterTempMin": 15.0,
-  "waterTempMax": 20.0
+    "id": 1,
+    "name": "Laitue",
+    "phMin": 5.5,
+    "phMax": 6.5,
+    "ecMin": 0.8,
+    "ecMax": 1.2,
+    "waterTempMin": 15.0,
+    "waterTempMax": 20.0
 }
 ```
 
 **Interprétation** :
-- pH optimal : 5.5 - 6.5
-- EC optimale : 0.8 - 1.2 mS/cm
-- Température eau optimale : 15°C - 20°C
+
+-   pH optimal : 5.5 - 6.5
+-   EC optimale : 0.8 - 1.2 mS/cm
+-   Température eau optimale : 15°C - 20°C
 
 ---
 
@@ -226,22 +247,22 @@ php bin/console doctrine:fixtures:load
 
 ## 📝 Notes techniques
 
-- **Base de données** : SQLite (dev) - facilement portable vers PostgreSQL/MySQL
-- **API Platform** : Version 4.2+
-- **Symfony** : Version 7.3
-- **PHP** : 8.2+
-- **Sérialisation** : JSON-LD par défaut (API Platform)
-- **CORS** : Configuré pour localhost
-- **Pagination** : 30 items par page (configurable dans l'entité)
+-   **Base de données** : SQLite (dev) - facilement portable vers PostgreSQL/MySQL
+-   **API Platform** : Version 4.2+
+-   **Symfony** : Version 7.3
+-   **PHP** : 8.2+
+-   **Sérialisation** : JSON-LD par défaut (API Platform)
+-   **CORS** : Configuré pour localhost
+-   **Pagination** : 30 items par page (configurable dans l'entité)
 
 ---
 
 ## 🔒 Sécurité
 
-- ✅ Lecture publique autorisée (GET uniquement)
-- ✅ Écriture protégée par JWT (non exposée)
-- ✅ Validation stricte des données en entrée
-- ✅ Typage fort PHP 8.2+
+-   ✅ Lecture publique autorisée (GET uniquement)
+-   ✅ Écriture protégée par JWT (non exposée)
+-   ✅ Validation stricte des données en entrée
+-   ✅ Typage fort PHP 8.2+
 
 ---
 
