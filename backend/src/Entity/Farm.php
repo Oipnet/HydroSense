@@ -75,6 +75,15 @@ class Farm
     #[ApiProperty(security: "is_granted('ROLE_ADMIN')")]
     private ?User $owner = null;
 
+    /**
+     * The culture profile used for this farm's reservoirs.
+     * Defines acceptable ranges for pH, EC, and water temperature.
+     */
+    #[ORM\ManyToOne(targetEntity: CultureProfile::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[Groups(['farm:read', 'farm:write', 'farm:item'])]
+    private ?CultureProfile $cultureProfile = null;
+
     #[ORM\OneToMany(targetEntity: Reservoir::class, mappedBy: 'farm', orphanRemoval: true, cascade: ['persist'])]
     #[Groups(['farm:item'])]
     private Collection $reservoirs;
@@ -119,6 +128,18 @@ class Farm
     public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getCultureProfile(): ?CultureProfile
+    {
+        return $this->cultureProfile;
+    }
+
+    public function setCultureProfile(?CultureProfile $cultureProfile): static
+    {
+        $this->cultureProfile = $cultureProfile;
 
         return $this;
     }

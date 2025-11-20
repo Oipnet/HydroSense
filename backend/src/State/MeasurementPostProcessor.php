@@ -5,8 +5,10 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\State\ProcessorInterface;
+use App\Entity\Alert;
 use App\Entity\Measurement;
 use App\Entity\Reservoir;
+use App\Service\AnomalyDetector;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -23,6 +25,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * - source to MANUAL for manual creation
  * - reservoir from URL path for custom POST
  * 
+ * After persisting the measurement, triggers anomaly detection:
+ * - Calls AnomalyDetector service
+ * - Persists any Alert entities generated
+ * 
  * Security:
  * - User must own the reservoir's farm
  * 
@@ -32,7 +38,8 @@ final class MeasurementPostProcessor implements ProcessorInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly Security $security
+        private readonly Security $security,
+        private readonly AnomalyDetector $anomalyDetector
     ) {
     }
 
@@ -91,9 +98,43 @@ final class MeasurementPostProcessor implements ProcessorInterface
             $data->setSource(Measurement::SOURCE_MANUAL);
         }
         
+        // Persist the measurement
         $this->entityManager->persist($data);
         $this->entityManager->flush();
         
+        // Trigger anomaly detection after measurement is persisted
+        $this->detectAndCreateAlerts($data);
+        
         return $data;
+    }
+
+    /**
+     * Detect anomalies in the measurement and create Alert entities.
+     * 
+     * @param Measurement $measurement The persisted measurement to analyze
+     */
+    private function detectAndCreateAlerts(Measurement $measurement): void
+    {
+        $reservoir = $measurement->getReservoir();
+        if (!$reservoir) {
+            return;
+        }
+
+        // Get the CultureProfile from the Farm
+        $farm = $reservoir->getFarm();
+        $cultureProfile = $farm?->getCultureProfile();
+
+        // Detect anomalies
+        $alerts = $this->anomalyDetector->detect($measurement, $cultureProfile);
+
+        // Persist all generated alerts
+        foreach ($alerts as $alert) {
+            $this->entityManager->persist($alert);
+        }
+
+        // Flush only if there are alerts to persist
+        if (count($alerts) > 0) {
+            $this->entityManager->flush();
+        }
     }
 }
