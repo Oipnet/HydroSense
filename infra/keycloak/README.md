@@ -5,6 +5,7 @@ Ce dossier contient la configuration Docker Compose pour exécuter Keycloak loca
 ## 🎯 Objectif
 
 Fournir une instance Keycloak locale pour :
+
 - Tester l'authentification OIDC avec Better Auth (frontend Nuxt 4)
 - Configurer des realms, clients et utilisateurs de test
 - Valider l'intégration SSO avec le backend Symfony
@@ -51,6 +52,7 @@ Une fois les conteneurs démarrés, Keycloak est accessible via :
 Le stack Docker Compose comprend :
 
 1. **PostgreSQL 15** : Base de données pour la persistance Keycloak
+
    - Database : `keycloak`
    - User : `keycloak`
    - Password : `keycloak`
@@ -69,10 +71,12 @@ Le stack Docker Compose comprend :
 Les variables d'environnement principales sont définies dans `docker-compose.yml` :
 
 **Keycloak Admin :**
+
 - `KEYCLOAK_ADMIN` : admin
 - `KEYCLOAK_ADMIN_PASSWORD` : admin
 
 **Base de données :**
+
 - `KC_DB` : postgres
 - `KC_DB_URL_HOST` : postgres
 - `KC_DB_URL_DATABASE` : keycloak
@@ -80,6 +84,7 @@ Les variables d'environnement principales sont définies dans `docker-compose.ym
 - `KC_DB_PASSWORD` : keycloak
 
 **Développement :**
+
 - `KC_HTTP_ENABLED` : true (HTTP activé en dev)
 - `KC_HOSTNAME_STRICT` : false (pas de vérification stricte du hostname)
 
@@ -100,6 +105,7 @@ docker compose ps
 ```
 
 Keycloak est prêt lorsque vous voyez dans les logs :
+
 ```
 Running the server in development mode. DO NOT use this configuration in production.
 ```
@@ -112,7 +118,7 @@ Si le port 8080 est déjà occupé, vous pouvez le modifier dans `docker-compose
 
 ```yaml
 ports:
-  - "8081:8080"  # Utilisez 8081 au lieu de 8080
+  - "8081:8080" # Utilisez 8081 au lieu de 8080
 ```
 
 ### Base de données corrompue
