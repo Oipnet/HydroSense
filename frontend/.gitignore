@@ -27,3 +27,7 @@ lerna-debug.log*
 .env
 .env.*
 !.env.example
+
+# Auth database (SQLite)
+data/
+!data/.gitkeep
