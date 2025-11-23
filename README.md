@@ -7,6 +7,7 @@ HydroSense est une solution complète de monitoring et d'optimisation pour les s
 ## 🎯 À Propos
 
 HydroSense est un monorepo contenant :
+
 - **Backend** (`backend/`) : API REST avec Symfony 7 + API Platform pour la gestion des données de capteurs, nutriments et cycles de culture
 - **Frontend** (`frontend/`) : Interface utilisateur moderne développée avec Nuxt 3 pour le monitoring et la configuration
 - **Infrastructure** (`infra/`) : Configuration Docker et outils de déploiement pour un environnement de production robuste
@@ -23,15 +24,17 @@ Le développement est organisé en 5 EPICs :
 
 ## 🚀 Démarrage Rapide
 
-*À compléter une fois les issues EPIC-1 et EPIC-2 complétées*
+_À compléter une fois les issues EPIC-1 et EPIC-2 complétées_
 
 ## 📝 Documentation
 
 ### Backend
+
 - Voir `backend/README.md`
 - Documentation API : `backend/docs/`
 
 ### Frontend
+
 - Voir `frontend/README.md`
 - **🛡️ Proxy Edge Sécurisé** : `frontend/EDGE-PROXY-README.md`
   - Guide complet : `frontend/docs/EDGE-PROXY.md`
@@ -40,6 +43,7 @@ Le développement est organisé en 5 EPICs :
   - Migration : `frontend/docs/EDGE-PROXY-MIGRATION.md`
 
 ### Infrastructure
+
 - Voir `infra/README.md`
 
 ## 🤝 Contribution

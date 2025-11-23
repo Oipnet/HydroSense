@@ -9,6 +9,7 @@ Le proxy **Edge** est une couche de sécurité côté serveur Nuxt qui intercept
 **Le navigateur ne doit JAMAIS appeler directement le backend Symfony.**
 
 Tous les appels passent par le proxy edge qui :
+
 1. Récupère la session Better Auth côté serveur
 2. Extrait le JWT access token
 3. Propage le token vers Symfony
@@ -65,24 +66,28 @@ Vérifier que le proxy fonctionne :
 
 ```typescript
 // Appel
-const { data } = await useFetch('/api/edge/ping');
+const { data } = await useFetch("/api/edge/ping");
 
 // Réponse
-{ ok: true }
+{
+  ok: true;
+}
 ```
 
 ### 2. Appels API via le proxy
 
 **❌ Avant (appel direct - NE PAS FAIRE) :**
+
 ```typescript
 // MAUVAIS : appel direct au backend
-const { data } = await useFetch('https://api.hydrosense.local/api/reservoirs');
+const { data } = await useFetch("https://api.hydrosense.local/api/reservoirs");
 ```
 
 **✅ Après (via proxy edge) :**
+
 ```typescript
 // BON : appel via le proxy edge
-const { data } = await useFetch('/api/edge/reservoirs');
+const { data } = await useFetch("/api/edge/reservoirs");
 ```
 
 ### 3. Exemples complets
@@ -91,12 +96,12 @@ const { data } = await useFetch('/api/edge/reservoirs');
 
 ```vue
 <script setup lang="ts">
-const { data: reservoirs, error } = await useFetch('/api/edge/reservoirs', {
-  method: 'GET',
+const { data: reservoirs, error } = await useFetch("/api/edge/reservoirs", {
+  method: "GET",
 });
 
 if (error.value) {
-  console.error('Erreur lors du chargement des réservoirs:', error.value);
+  console.error("Erreur lors du chargement des réservoirs:", error.value);
 }
 </script>
 
@@ -117,18 +122,21 @@ if (error.value) {
 ```vue
 <script setup lang="ts">
 const createMeasurement = async (data: any) => {
-  const { data: measurement, error } = await useFetch('/api/edge/measurements', {
-    method: 'POST',
-    body: {
-      reservoir: '/api/reservoirs/123',
-      value: 42.5,
-      unit: 'liters',
-      measuredAt: new Date().toISOString(),
-    },
-  });
+  const { data: measurement, error } = await useFetch(
+    "/api/edge/measurements",
+    {
+      method: "POST",
+      body: {
+        reservoir: "/api/reservoirs/123",
+        value: 42.5,
+        unit: "liters",
+        measuredAt: new Date().toISOString(),
+      },
+    }
+  );
 
   if (error.value) {
-    console.error('Erreur lors de la création:', error.value);
+    console.error("Erreur lors de la création:", error.value);
     return null;
   }
 
@@ -143,12 +151,12 @@ const createMeasurement = async (data: any) => {
 <script setup lang="ts">
 const updateProfile = async (userId: string, updates: any) => {
   const { data, error } = await useFetch(`/api/edge/users/${userId}`, {
-    method: 'PATCH',
+    method: "PATCH",
     body: updates,
   });
 
   if (error.value) {
-    console.error('Erreur lors de la mise à jour:', error.value);
+    console.error("Erreur lors de la mise à jour:", error.value);
     return null;
   }
 
@@ -163,11 +171,11 @@ const updateProfile = async (userId: string, updates: any) => {
 <script setup lang="ts">
 const deleteReservoir = async (id: string) => {
   const { error } = await useFetch(`/api/edge/reservoirs/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
 
   if (error.value) {
-    console.error('Erreur lors de la suppression:', error.value);
+    console.error("Erreur lors de la suppression:", error.value);
     return false;
   }
 
@@ -180,10 +188,10 @@ const deleteReservoir = async (id: string) => {
 
 ```typescript
 // GET /api/reservoirs?farm=123&status=active
-const { data } = await useFetch('/api/edge/reservoirs', {
+const { data } = await useFetch("/api/edge/reservoirs", {
   query: {
-    farm: '123',
-    status: 'active',
+    farm: "123",
+    status: "active",
   },
 });
 ```
@@ -194,31 +202,31 @@ const { data } = await useFetch('/api/edge/reservoirs', {
 // composables/useReservoirs.ts
 export const useReservoirs = () => {
   const fetchReservoirs = async () => {
-    const { data, error } = await useFetch('/api/edge/reservoirs');
-    
+    const { data, error } = await useFetch("/api/edge/reservoirs");
+
     if (error.value) {
       throw createError({
         statusCode: error.value.statusCode,
-        message: 'Impossible de charger les réservoirs',
+        message: "Impossible de charger les réservoirs",
       });
     }
-    
+
     return data.value;
   };
 
   const createReservoir = async (reservoir: any) => {
-    const { data, error } = await useFetch('/api/edge/reservoirs', {
-      method: 'POST',
+    const { data, error } = await useFetch("/api/edge/reservoirs", {
+      method: "POST",
       body: reservoir,
     });
-    
+
     if (error.value) {
       throw createError({
         statusCode: error.value.statusCode,
-        message: 'Impossible de créer le réservoir',
+        message: "Impossible de créer le réservoir",
       });
     }
-    
+
     return data.value;
   };
 
@@ -270,7 +278,7 @@ API_URL=https://api.hydrosense.com
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      apiBase: process.env.API_URL || 'http://localhost:8000',
+      apiBase: process.env.API_URL || "http://localhost:8000",
     },
   },
 });
@@ -296,9 +304,10 @@ Le JWT est stocké dans la session Better Auth après l'authentification via Key
 **Important :** Adaptez cette ligne dans `[...path].ts` selon votre configuration :
 
 ```typescript
-const accessToken = (session.user as any).accessToken || 
-                   (session.session as any).accessToken ||
-                   (session as any).accessToken;
+const accessToken =
+  (session.user as any).accessToken ||
+  (session.session as any).accessToken ||
+  (session as any).accessToken;
 ```
 
 ## 🚨 Gestion d'erreurs
@@ -312,7 +321,7 @@ Le proxy edge gère automatiquement les erreurs :
 // si l'utilisateur n'est pas connecté
 throw createError({
   statusCode: 401,
-  message: 'Vous devez être authentifié',
+  message: "Vous devez être authentifié",
 });
 ```
 
@@ -321,7 +330,7 @@ throw createError({
 ```typescript
 // Les erreurs du backend Symfony sont propagées
 try {
-  const { data } = await useFetch('/api/edge/reservoirs');
+  const { data } = await useFetch("/api/edge/reservoirs");
 } catch (error) {
   // error.statusCode = code d'erreur Symfony
   // error.message = message d'erreur Symfony
@@ -333,15 +342,16 @@ try {
 
 ```vue
 <script setup lang="ts">
-const { data, error } = await useFetch('/api/edge/reservoirs');
+const { data, error } = await useFetch("/api/edge/reservoirs");
 
 // Afficher l'erreur à l'utilisateur
 if (error.value) {
-  const errorMessage = error.value.data?.message || 
-                      error.value.message || 
-                      'Une erreur est survenue';
-  
-  console.error('Erreur API:', errorMessage);
+  const errorMessage =
+    error.value.data?.message ||
+    error.value.message ||
+    "Une erreur est survenue";
+
+  console.error("Erreur API:", errorMessage);
 }
 </script>
 ```
@@ -385,7 +395,7 @@ export const useApi = () => {
   const fetchResource = (path: string) => {
     return useFetch(`/api/edge/${path}`);
   };
-  
+
   return { fetchResource };
 };
 ```
@@ -394,13 +404,13 @@ export const useApi = () => {
 
 ```typescript
 // ❌ MAUVAIS - Ne JAMAIS faire ça
-const token = 'secret-token';
-fetch('/api/edge/reservoirs', {
-  headers: { Authorization: `Bearer ${token}` }
+const token = "secret-token";
+fetch("/api/edge/reservoirs", {
+  headers: { Authorization: `Bearer ${token}` },
 });
 
 // ✅ BON - Le token est géré par le proxy edge
-fetch('/api/edge/reservoirs');
+fetch("/api/edge/reservoirs");
 ```
 
 ### 3. Typage TypeScript
@@ -412,7 +422,7 @@ interface Reservoir {
   capacity: number;
 }
 
-const { data } = await useFetch<Reservoir[]>('/api/edge/reservoirs');
+const { data } = await useFetch<Reservoir[]>("/api/edge/reservoirs");
 ```
 
 ## 🐛 Troubleshooting
@@ -422,6 +432,7 @@ const { data } = await useFetch<Reservoir[]>('/api/edge/reservoirs');
 **Cause :** La session Better Auth n'est pas valide ou expirée.
 
 **Solution :**
+
 1. Vérifier que l'utilisateur est connecté
 2. Recharger la session : `await fetchSession()`
 3. Reconnecter l'utilisateur si nécessaire
@@ -431,6 +442,7 @@ const { data } = await useFetch<Reservoir[]>('/api/edge/reservoirs');
 **Cause :** La variable `API_URL` n'est pas définie.
 
 **Solution :**
+
 ```bash
 # .env
 API_URL=http://localhost:8000
@@ -441,6 +453,7 @@ API_URL=http://localhost:8000
 **Cause :** Le JWT n'est pas trouvé dans la session Better Auth.
 
 **Solution :**
+
 1. Vérifier la configuration Keycloak
 2. Adapter l'extraction du token dans `[...path].ts`
 3. Vérifier que les scopes incluent le token
@@ -450,6 +463,7 @@ API_URL=http://localhost:8000
 **Cause :** Normalement, il ne devrait PAS y avoir d'erreurs CORS car tout passe par le proxy.
 
 **Si vous voyez des erreurs CORS :**
+
 - Vérifiez que vous appelez bien `/api/edge/*` et non directement le backend
 - Le navigateur ne doit jamais appeler directement Symfony
 

@@ -7,6 +7,7 @@
 **Le navigateur ne doit JAMAIS appeler directement le backend.**
 
 Tous les appels passent par un proxy sécurisé **Edge** côté Nuxt qui :
+
 1. ✅ Récupère la session Better Auth côté serveur
 2. ✅ Extrait le JWT access token (depuis Keycloak)
 3. ✅ Propage le token vers Symfony via `Authorization: Bearer`
@@ -75,7 +76,7 @@ curl http://localhost:3000/api/edge/ping
 // const { data } = await useFetch('https://api.hydrosense.com/api/reservoirs');
 
 // ✅ APRÈS : Via proxy edge (CORRECT)
-const { data } = await useFetch('/api/edge/reservoirs');
+const { data } = await useFetch("/api/edge/reservoirs");
 </script>
 ```
 
@@ -83,13 +84,13 @@ const { data } = await useFetch('/api/edge/reservoirs');
 
 ## 📚 Documentation
 
-| Document | Description |
-|----------|-------------|
-| **[EDGE-PROXY.md](./docs/EDGE-PROXY.md)** | Guide complet d'utilisation du proxy |
-| **[EDGE-PROXY-FLOW.md](./docs/EDGE-PROXY-FLOW.md)** | Schéma ASCII détaillé du flux |
-| **[EDGE-PROXY-EXAMPLES.ts](./docs/EDGE-PROXY-EXAMPLES.ts)** | Exemples de code pratiques |
-| **[EDGE-PROXY-MIGRATION.md](./docs/EDGE-PROXY-MIGRATION.md)** | Guide pour migrer le code existant |
-| **[EDGE-PROXY-SUMMARY.md](./docs/EDGE-PROXY-SUMMARY.md)** | Résumé de l'implémentation |
+| Document                                                      | Description                          |
+| ------------------------------------------------------------- | ------------------------------------ |
+| **[EDGE-PROXY.md](./docs/EDGE-PROXY.md)**                     | Guide complet d'utilisation du proxy |
+| **[EDGE-PROXY-FLOW.md](./docs/EDGE-PROXY-FLOW.md)**           | Schéma ASCII détaillé du flux        |
+| **[EDGE-PROXY-EXAMPLES.ts](./docs/EDGE-PROXY-EXAMPLES.ts)**   | Exemples de code pratiques           |
+| **[EDGE-PROXY-MIGRATION.md](./docs/EDGE-PROXY-MIGRATION.md)** | Guide pour migrer le code existant   |
+| **[EDGE-PROXY-SUMMARY.md](./docs/EDGE-PROXY-SUMMARY.md)**     | Résumé de l'implémentation           |
 
 ---
 
@@ -98,16 +99,16 @@ const { data } = await useFetch('/api/edge/reservoirs');
 ### Exemple 1 : GET simple
 
 ```typescript
-const { data } = await useFetch('/api/edge/reservoirs');
+const { data } = await useFetch("/api/edge/reservoirs");
 ```
 
 ### Exemple 2 : POST avec body
 
 ```typescript
-const { data } = await useFetch('/api/edge/reservoirs', {
-  method: 'POST',
+const { data } = await useFetch("/api/edge/reservoirs", {
+  method: "POST",
   body: {
-    name: 'Tank A',
+    name: "Tank A",
     capacity: 5000,
   },
 });
@@ -119,16 +120,16 @@ const { data } = await useFetch('/api/edge/reservoirs', {
 const edgeApi = useEdgeApi();
 
 // GET
-const reservoirs = await edgeApi.get('reservoirs');
+const reservoirs = await edgeApi.get("reservoirs");
 
 // POST
-const newReservoir = await edgeApi.post('reservoirs', { name: 'Tank B' });
+const newReservoir = await edgeApi.post("reservoirs", { name: "Tank B" });
 
 // PATCH
-const updated = await edgeApi.patch('reservoirs/123', { capacity: 3000 });
+const updated = await edgeApi.patch("reservoirs/123", { capacity: 3000 });
 
 // DELETE
-await edgeApi.delete('reservoirs/123');
+await edgeApi.delete("reservoirs/123");
 ```
 
 ### Exemple 4 : Composable métier
@@ -139,11 +140,11 @@ export const useReservoirs = () => {
   const edgeApi = useEdgeApi();
 
   const fetchAll = async () => {
-    return await edgeApi.get('reservoirs');
+    return await edgeApi.get("reservoirs");
   };
 
   const create = async (data: any) => {
-    return await edgeApi.post('reservoirs', data);
+    return await edgeApi.post("reservoirs", data);
   };
 
   return { fetchAll, create };
@@ -191,19 +192,19 @@ export const useReservoirs = () => {
 
 ```typescript
 // Importer les tests
-import tests from './tests/edge-proxy.test';
+import tests from "./tests/edge-proxy.test";
 
 // Exécuter la suite complète
 await tests.runAllTests();
 
 // Ou tests individuels
 await tests.testPing();
-await tests.testGet('reservoirs');
+await tests.testGet("reservoirs");
 tests.testNoTokenExposed();
 tests.testCookies();
 
 // Test CRUD complet
-await tests.testFullCrud('reservoirs');
+await tests.testFullCrud("reservoirs");
 ```
 
 ### Vérification manuelle
@@ -244,12 +245,12 @@ curl http://localhost:3000/api/edge/ping
 
 ## 🐛 Troubleshooting
 
-| Erreur | Cause | Solution |
-|--------|-------|----------|
-| **401 Unauthorized** | Session expirée | Reconnecter l'utilisateur |
-| **500 API base URL not configured** | `API_URL` manquante | Ajouter dans `.env` |
-| **No access token** | JWT introuvable dans session | Adapter extraction dans `[...path].ts` |
-| **CORS errors** | Appel direct au backend | Utiliser `/api/edge/*` |
+| Erreur                              | Cause                        | Solution                               |
+| ----------------------------------- | ---------------------------- | -------------------------------------- |
+| **401 Unauthorized**                | Session expirée              | Reconnecter l'utilisateur              |
+| **500 API base URL not configured** | `API_URL` manquante          | Ajouter dans `.env`                    |
+| **No access token**                 | JWT introuvable dans session | Adapter extraction dans `[...path].ts` |
+| **CORS errors**                     | Appel direct au backend      | Utiliser `/api/edge/*`                 |
 
 ---
 
@@ -271,11 +272,13 @@ curl http://localhost:3000/api/edge/ping
 ### Pour les nouveaux développeurs
 
 1. **Lire la documentation :**
+
    - Commencer par [EDGE-PROXY-SUMMARY.md](./docs/EDGE-PROXY-SUMMARY.md)
    - Comprendre le flux avec [EDGE-PROXY-FLOW.md](./docs/EDGE-PROXY-FLOW.md)
    - Consulter les exemples dans [EDGE-PROXY-EXAMPLES.ts](./docs/EDGE-PROXY-EXAMPLES.ts)
 
 2. **Tester localement :**
+
    - Configurer `.env`
    - Lancer l'app : `npm run dev`
    - Tester : `curl http://localhost:3000/api/edge/ping`
@@ -288,6 +291,7 @@ curl http://localhost:3000/api/edge/ping
 ### Pour migrer du code existant
 
 Suivre le guide [EDGE-PROXY-MIGRATION.md](./docs/EDGE-PROXY-MIGRATION.md) qui couvre :
+
 - Identification des appels à migrer
 - Patterns de migration avant/après
 - Checklist de vérification
@@ -303,8 +307,8 @@ Le JWT peut être stocké à différents endroits selon la configuration Better 
 **Dans `server/api/edge/[...path].ts`, ligne ~75 :**
 
 ```typescript
-const accessToken = 
-  (session.user as any).accessToken || 
+const accessToken =
+  (session.user as any).accessToken ||
   (session.session as any).accessToken ||
   (session as any).accessToken;
 ```
@@ -361,6 +365,7 @@ En cas de problème :
 Le proxy Edge est **opérationnel et sécurisé** !
 
 Tous les appels API passent maintenant par une couche sécurisée qui :
+
 - ✅ Protège le JWT
 - ✅ Simplifie le code frontend
 - ✅ Centralise l'authentification

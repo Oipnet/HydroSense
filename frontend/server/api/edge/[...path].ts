@@ -1,15 +1,15 @@
 /**
  * Proxy universel Edge - Forward toutes les requêtes vers le backend Symfony
- * 
+ *
  * Ce proxy :
  * 1. Récupère la session Better Auth côté serveur (jamais côté browser)
  * 2. Extrait le JWT access token de la session
  * 3. Propage le token vers Symfony via Authorization header
  * 4. Forward la requête complète (méthode, path, body, querystring)
  * 5. Renvoie la réponse au frontend
- * 
+ *
  * @route ANY /api/edge/*
- * 
+ *
  * Exemples:
  * - GET /api/edge/reservoirs → GET {apiBase}/api/reservoirs
  * - POST /api/edge/measurements → POST {apiBase}/api/measurements
@@ -73,9 +73,10 @@ export default defineEventHandler(async (event: H3Event) => {
     // 8. Extraire le JWT access token depuis la session
     // Note: Better Auth stocke le token dans session.user ou dans un champ spécifique
     // Adaptez cette ligne selon votre configuration Keycloak/Better Auth
-    const accessToken = (session.user as any).accessToken || 
-                       (session.session as any).accessToken ||
-                       (session as any).accessToken;
+    const accessToken =
+      (session.user as any).accessToken ||
+      (session.session as any).accessToken ||
+      (session as any).accessToken;
 
     if (!accessToken) {
       throw createError({
@@ -89,9 +90,9 @@ export default defineEventHandler(async (event: H3Event) => {
     const response = await $fetch(fullUrl, {
       method: method as any,
       headers: {
-        "Authorization": `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
-        "Accept": "application/json",
+        Accept: "application/json",
       },
       body: body,
       // Ne pas lancer d'exception sur les erreurs HTTP (on les forward)

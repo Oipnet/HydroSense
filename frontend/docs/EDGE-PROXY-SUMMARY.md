@@ -5,6 +5,7 @@
 Le proxy sécurisé **Edge** est maintenant opérationnel dans Nuxt 4.
 
 **Principe :** Tous les appels API du browser passent par `/api/edge/*` qui :
+
 1. Récupère la session Better Auth côté serveur
 2. Extrait le JWT access token
 3. Forward vers Symfony avec `Authorization: Bearer <jwt>`
@@ -62,14 +63,14 @@ curl http://localhost:3000/api/edge/ping
 ```vue
 <script setup lang="ts">
 // Méthode 1 : useFetch direct
-const { data } = await useFetch('/api/edge/reservoirs');
+const { data } = await useFetch("/api/edge/reservoirs");
 
 // Méthode 2 : Via le composable useEdgeApi
 const edgeApi = useEdgeApi();
-const reservoirs = await edgeApi.get('reservoirs');
-const newReservoir = await edgeApi.post('reservoirs', { name: 'Tank A' });
-const updated = await edgeApi.patch('reservoirs/123', { capacity: 2000 });
-await edgeApi.delete('reservoirs/123');
+const reservoirs = await edgeApi.get("reservoirs");
+const newReservoir = await edgeApi.post("reservoirs", { name: "Tank A" });
+const updated = await edgeApi.patch("reservoirs/123", { capacity: 2000 });
+await edgeApi.delete("reservoirs/123");
 </script>
 ```
 
@@ -83,9 +84,9 @@ const loading = ref(true);
 
 onMounted(async () => {
   try {
-    reservoirs.value = await edgeApi.get('reservoirs');
+    reservoirs.value = await edgeApi.get("reservoirs");
   } catch (error) {
-    console.error('Erreur:', error);
+    console.error("Erreur:", error);
   } finally {
     loading.value = false;
   }
@@ -171,14 +172,14 @@ Browser (data reçue)
 
 ## 📊 Endpoints supportés
 
-| Méthode | Exemple | Description |
-|---------|---------|-------------|
-| **GET** | `/api/edge/reservoirs` | Liste des ressources |
-| **GET** | `/api/edge/reservoirs/123` | Détail d'une ressource |
-| **POST** | `/api/edge/reservoirs` | Création |
-| **PATCH** | `/api/edge/reservoirs/123` | Mise à jour partielle |
-| **PUT** | `/api/edge/reservoirs/123` | Remplacement complet |
-| **DELETE** | `/api/edge/reservoirs/123` | Suppression |
+| Méthode    | Exemple                    | Description            |
+| ---------- | -------------------------- | ---------------------- |
+| **GET**    | `/api/edge/reservoirs`     | Liste des ressources   |
+| **GET**    | `/api/edge/reservoirs/123` | Détail d'une ressource |
+| **POST**   | `/api/edge/reservoirs`     | Création               |
+| **PATCH**  | `/api/edge/reservoirs/123` | Mise à jour partielle  |
+| **PUT**    | `/api/edge/reservoirs/123` | Remplacement complet   |
+| **DELETE** | `/api/edge/reservoirs/123` | Suppression            |
 
 **Tous les endpoints passent par le même proxy !**
 
@@ -214,12 +215,12 @@ console.log(sessionStorage); // ❌ Pas de token
 
 ## 🐛 Troubleshooting
 
-| Erreur | Cause | Solution |
-|--------|-------|----------|
-| **401 Unauthorized** | Session expirée | Reconnecter l'utilisateur |
-| **500 API base URL not configured** | `API_URL` manquante | Ajouter dans `.env` |
-| **No access token** | JWT introuvable | Adapter l'extraction dans `[...path].ts` |
-| **CORS errors** | Appel direct au backend | Utiliser `/api/edge/*` |
+| Erreur                              | Cause                   | Solution                                 |
+| ----------------------------------- | ----------------------- | ---------------------------------------- |
+| **401 Unauthorized**                | Session expirée         | Reconnecter l'utilisateur                |
+| **500 API base URL not configured** | `API_URL` manquante     | Ajouter dans `.env`                      |
+| **No access token**                 | JWT introuvable         | Adapter l'extraction dans `[...path].ts` |
+| **CORS errors**                     | Appel direct au backend | Utiliser `/api/edge/*`                   |
 
 ## 📚 Documentation détaillée
 
@@ -230,18 +231,18 @@ console.log(sessionStorage); // ❌ Pas de token
 
 ## ✅ Acceptance Criteria
 
-| Critère | Statut |
-|---------|--------|
-| Tous les appels passent par `/api/edge/*` | ✅ |
-| Le proxy forward correctement vers Symfony | ✅ |
-| Symfony reçoit `Authorization: Bearer <jwt>` | ✅ |
-| Le JWT provient de Better Auth (serveur) | ✅ |
-| Aucun appel direct du navigateur vers Symfony | ✅ |
-| `/api/edge/ping` répond `{ ok: true }` | ✅ |
-| Code propre et idiomatique Nuxt 4 | ✅ |
-| Bonne gestion d'erreurs (try/catch) | ✅ |
-| Pas de fuite d'infos sensibles côté browser | ✅ |
-| Documentation complète | ✅ |
+| Critère                                       | Statut |
+| --------------------------------------------- | ------ |
+| Tous les appels passent par `/api/edge/*`     | ✅     |
+| Le proxy forward correctement vers Symfony    | ✅     |
+| Symfony reçoit `Authorization: Bearer <jwt>`  | ✅     |
+| Le JWT provient de Better Auth (serveur)      | ✅     |
+| Aucun appel direct du navigateur vers Symfony | ✅     |
+| `/api/edge/ping` répond `{ ok: true }`        | ✅     |
+| Code propre et idiomatique Nuxt 4             | ✅     |
+| Bonne gestion d'erreurs (try/catch)           | ✅     |
+| Pas de fuite d'infos sensibles côté browser   | ✅     |
+| Documentation complète                        | ✅     |
 
 ## 🎓 Bonnes pratiques
 
@@ -265,10 +266,12 @@ console.log(sessionStorage); // ❌ Pas de token
 ### Pour les développeurs
 
 1. **Lire la documentation :**
+
    - `docs/EDGE-PROXY.md` (guide complet)
    - `docs/EDGE-PROXY-FLOW.md` (comprendre le flux)
 
 2. **Migrer le code existant :**
+
    - Suivre `docs/EDGE-PROXY-MIGRATION.md`
    - Remplacer tous les appels directs par `/api/edge/*`
 
@@ -290,10 +293,12 @@ console.log(sessionStorage); // ❌ Pas de token
 Le JWT doit être correctement stocké dans la session Better Auth.
 
 **Dans `[...path].ts`, ligne ~75 :**
+
 ```typescript
-const accessToken = (session.user as any).accessToken || 
-                   (session.session as any).accessToken ||
-                   (session as any).accessToken;
+const accessToken =
+  (session.user as any).accessToken ||
+  (session.session as any).accessToken ||
+  (session as any).accessToken;
 ```
 
 **Adaptez selon votre configuration :** Vérifiez où Better Auth stocke le JWT après l'authentification Keycloak.
@@ -315,6 +320,7 @@ const accessToken = (session.user as any).accessToken ||
 Le proxy Edge est **opérationnel et sécurisé** !
 
 Tous les appels API passent maintenant par une couche sécurisée qui :
+
 - ✅ Protège le JWT
 - ✅ Simplifie le code frontend
 - ✅ Centralise l'authentification

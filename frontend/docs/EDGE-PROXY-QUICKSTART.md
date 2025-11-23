@@ -36,7 +36,7 @@ curl http://localhost:3000/api/edge/ping
 // const { data } = await useFetch('https://api.hydrosense.com/api/reservoirs');
 
 // ✅ MAINTENANT
-const { data } = await useFetch('/api/edge/reservoirs');
+const { data } = await useFetch("/api/edge/reservoirs");
 </script>
 ```
 
@@ -45,32 +45,32 @@ const { data } = await useFetch('/api/edge/reservoirs');
 ### GET
 
 ```typescript
-const { data } = await useFetch('/api/edge/reservoirs');
+const { data } = await useFetch("/api/edge/reservoirs");
 ```
 
 ### POST
 
 ```typescript
-const { data } = await useFetch('/api/edge/reservoirs', {
-  method: 'POST',
-  body: { name: 'Tank A', capacity: 5000 }
+const { data } = await useFetch("/api/edge/reservoirs", {
+  method: "POST",
+  body: { name: "Tank A", capacity: 5000 },
 });
 ```
 
 ### PATCH
 
 ```typescript
-const { data } = await useFetch('/api/edge/reservoirs/123', {
-  method: 'PATCH',
-  body: { capacity: 3000 }
+const { data } = await useFetch("/api/edge/reservoirs/123", {
+  method: "PATCH",
+  body: { capacity: 3000 },
 });
 ```
 
 ### DELETE
 
 ```typescript
-await useFetch('/api/edge/reservoirs/123', {
-  method: 'DELETE'
+await useFetch("/api/edge/reservoirs/123", {
+  method: "DELETE",
 });
 ```
 
@@ -80,10 +80,10 @@ await useFetch('/api/edge/reservoirs/123', {
 const edgeApi = useEdgeApi();
 
 // Toutes les méthodes en un seul composable
-await edgeApi.get('reservoirs');
-await edgeApi.post('reservoirs', { name: 'Tank A' });
-await edgeApi.patch('reservoirs/123', { capacity: 3000 });
-await edgeApi.delete('reservoirs/123');
+await edgeApi.get("reservoirs");
+await edgeApi.post("reservoirs", { name: "Tank A" });
+await edgeApi.patch("reservoirs/123", { capacity: 3000 });
+await edgeApi.delete("reservoirs/123");
 ```
 
 ## 🔄 Pattern de migration
@@ -92,12 +92,12 @@ await edgeApi.delete('reservoirs/123');
 
 ```typescript
 const config = useRuntimeConfig();
-const token = localStorage.getItem('token'); // ⚠️ Dangereux
+const token = localStorage.getItem("token"); // ⚠️ Dangereux
 
 const { data } = await useFetch(`${config.public.apiBaseUrl}/api/reservoirs`, {
   headers: {
-    'Authorization': `Bearer ${token}`
-  }
+    Authorization: `Bearer ${token}`,
+  },
 });
 ```
 
@@ -105,7 +105,7 @@ const { data } = await useFetch(`${config.public.apiBaseUrl}/api/reservoirs`, {
 
 ```typescript
 // Plus simple, plus sûr
-const { data } = await useFetch('/api/edge/reservoirs');
+const { data } = await useFetch("/api/edge/reservoirs");
 ```
 
 **Réduction de 70% du code !** 🎉

@@ -175,16 +175,19 @@
 ## 🔒 Points de sécurité clés
 
 1. **JWT jamais exposé au browser**
+
    - Le token JWT reste côté serveur Nuxt
    - Le browser ne voit que le cookie de session Better Auth
    - Aucun risque de fuite via DevTools ou XSS
 
 2. **Validation côté serveur**
+
    - Better Auth vérifie la session côté serveur
    - Impossible de falsifier depuis le browser
    - Les cookies HttpOnly ne sont pas accessibles en JS
 
 3. **Token frais**
+
    - Le JWT est récupéré à chaque requête
    - Si le token expire, Better Auth le rafraîchit automatiquement
    - L'utilisateur ne voit jamais de token expiré
@@ -243,13 +246,13 @@ Browser → Nuxt Edge → Symfony
 
 ## 🛡️ Protection contre les attaques
 
-| Attaque | Protection Edge Proxy |
-|---------|----------------------|
-| **XSS** | ✅ JWT jamais dans le DOM/localStorage |
-| **CSRF** | ✅ SameSite cookies + validation serveur |
-| **Token theft** | ✅ Token jamais accessible côté client |
-| **Man-in-the-middle** | ✅ HTTPS + cookies Secure |
-| **Token replay** | ✅ Expiration + refresh automatique |
+| Attaque               | Protection Edge Proxy                    |
+| --------------------- | ---------------------------------------- |
+| **XSS**               | ✅ JWT jamais dans le DOM/localStorage   |
+| **CSRF**              | ✅ SameSite cookies + validation serveur |
+| **Token theft**       | ✅ Token jamais accessible côté client   |
+| **Man-in-the-middle** | ✅ HTTPS + cookies Secure                |
+| **Token replay**      | ✅ Expiration + refresh automatique      |
 
 ## 📈 Performance
 

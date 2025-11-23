@@ -42,13 +42,15 @@ Remplacer tous les appels directs au backend par des appels via `/api/edge/*`.
 ### Pattern 1 : useFetch simple
 
 **❌ Avant :**
+
 ```typescript
-const { data } = await useFetch('https://api.hydrosense.local/api/reservoirs');
+const { data } = await useFetch("https://api.hydrosense.local/api/reservoirs");
 ```
 
 **✅ Après :**
+
 ```typescript
-const { data } = await useFetch('/api/edge/reservoirs');
+const { data } = await useFetch("/api/edge/reservoirs");
 ```
 
 ---
@@ -56,19 +58,21 @@ const { data } = await useFetch('/api/edge/reservoirs');
 ### Pattern 2 : useFetch avec headers manuels
 
 **❌ Avant :**
+
 ```typescript
-const token = localStorage.getItem('token'); // ⚠️ RISQUE DE SÉCURITÉ
-const { data } = await useFetch('https://api.hydrosense.local/api/reservoirs', {
+const token = localStorage.getItem("token"); // ⚠️ RISQUE DE SÉCURITÉ
+const { data } = await useFetch("https://api.hydrosense.local/api/reservoirs", {
   headers: {
-    'Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
   },
 });
 ```
 
 **✅ Après :**
+
 ```typescript
 // Le token est automatiquement ajouté par le proxy edge
-const { data } = await useFetch('/api/edge/reservoirs');
+const { data } = await useFetch("/api/edge/reservoirs");
 ```
 
 ---
@@ -76,6 +80,7 @@ const { data } = await useFetch('/api/edge/reservoirs');
 ### Pattern 3 : $fetch dans un composable
 
 **❌ Avant :**
+
 ```typescript
 export const useReservoirs = () => {
   const config = useRuntimeConfig();
@@ -84,7 +89,7 @@ export const useReservoirs = () => {
   const fetchAll = async () => {
     return await $fetch(`${config.public.apiBaseUrl}/api/reservoirs`, {
       headers: {
-        'Authorization': `Bearer ${token.value}`,
+        Authorization: `Bearer ${token.value}`,
       },
     });
   };
@@ -94,12 +99,13 @@ export const useReservoirs = () => {
 ```
 
 **✅ Après :**
+
 ```typescript
 export const useReservoirs = () => {
   const edgeApi = useEdgeApi();
 
   const fetchAll = async () => {
-    return await edgeApi.get('reservoirs');
+    return await edgeApi.get("reservoirs");
   };
 
   return { fetchAll };
@@ -111,15 +117,16 @@ export const useReservoirs = () => {
 ### Pattern 4 : Appel POST avec body
 
 **❌ Avant :**
+
 ```typescript
 const token = useAuthToken();
 
 const createReservoir = async (data: any) => {
-  return await $fetch('https://api.hydrosense.local/api/reservoirs', {
-    method: 'POST',
+  return await $fetch("https://api.hydrosense.local/api/reservoirs", {
+    method: "POST",
     headers: {
-      'Authorization': `Bearer ${token.value}`,
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token.value}`,
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
   });
@@ -127,11 +134,12 @@ const createReservoir = async (data: any) => {
 ```
 
 **✅ Après :**
+
 ```typescript
 const edgeApi = useEdgeApi();
 
 const createReservoir = async (data: any) => {
-  return await edgeApi.post('reservoirs', data);
+  return await edgeApi.post("reservoirs", data);
 };
 ```
 
@@ -140,15 +148,16 @@ const createReservoir = async (data: any) => {
 ### Pattern 5 : PATCH / UPDATE
 
 **❌ Avant :**
+
 ```typescript
 const token = useAuthToken();
 
 const updateReservoir = async (id: string, updates: any) => {
   return await $fetch(`https://api.hydrosense.local/api/reservoirs/${id}`, {
-    method: 'PATCH',
+    method: "PATCH",
     headers: {
-      'Authorization': `Bearer ${token.value}`,
-      'Content-Type': 'application/merge-patch+json',
+      Authorization: `Bearer ${token.value}`,
+      "Content-Type": "application/merge-patch+json",
     },
     body: updates,
   });
@@ -156,6 +165,7 @@ const updateReservoir = async (id: string, updates: any) => {
 ```
 
 **✅ Après :**
+
 ```typescript
 const edgeApi = useEdgeApi();
 
@@ -169,20 +179,22 @@ const updateReservoir = async (id: string, updates: any) => {
 ### Pattern 6 : DELETE
 
 **❌ Avant :**
+
 ```typescript
 const token = useAuthToken();
 
 const deleteReservoir = async (id: string) => {
   await $fetch(`https://api.hydrosense.local/api/reservoirs/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
-      'Authorization': `Bearer ${token.value}`,
+      Authorization: `Bearer ${token.value}`,
     },
   });
 };
 ```
 
 **✅ Après :**
+
 ```typescript
 const edgeApi = useEdgeApi();
 
@@ -196,28 +208,30 @@ const deleteReservoir = async (id: string) => {
 ### Pattern 7 : Query parameters
 
 **❌ Avant :**
+
 ```typescript
 const token = useAuthToken();
-const farmId = '123';
+const farmId = "123";
 
 const { data } = await useFetch(
   `https://api.hydrosense.local/api/reservoirs?farm=${farmId}&status=active`,
   {
     headers: {
-      'Authorization': `Bearer ${token.value}`,
+      Authorization: `Bearer ${token.value}`,
     },
   }
 );
 ```
 
 **✅ Après :**
-```typescript
-const farmId = '123';
 
-const { data } = await useFetch('/api/edge/reservoirs', {
+```typescript
+const farmId = "123";
+
+const { data } = await useFetch("/api/edge/reservoirs", {
   query: {
     farm: farmId,
-    status: 'active',
+    status: "active",
   },
 });
 ```
@@ -227,11 +241,12 @@ const { data } = await useFetch('/api/edge/reservoirs', {
 ### Pattern 8 : Gestion d'erreurs
 
 **❌ Avant :**
+
 ```typescript
 try {
-  const data = await $fetch('https://api.hydrosense.local/api/reservoirs', {
+  const data = await $fetch("https://api.hydrosense.local/api/reservoirs", {
     headers: {
-      'Authorization': `Bearer ${token.value}`,
+      Authorization: `Bearer ${token.value}`,
     },
   });
 } catch (error: any) {
@@ -244,15 +259,16 @@ try {
 ```
 
 **✅ Après :**
+
 ```typescript
 // Le proxy gère automatiquement le refresh du token
 try {
   const edgeApi = useEdgeApi();
-  const data = await edgeApi.get('reservoirs');
+  const data = await edgeApi.get("reservoirs");
 } catch (error: any) {
   if (error.statusCode === 401) {
     // Session expirée - rediriger vers login
-    navigateTo('/login');
+    navigateTo("/login");
   }
 }
 ```
@@ -262,6 +278,7 @@ try {
 ### Pattern 9 : Composable métier complet
 
 **❌ Avant :**
+
 ```typescript
 // composables/useReservoirs.ts
 export const useReservoirs = () => {
@@ -271,30 +288,30 @@ export const useReservoirs = () => {
 
   const fetchAll = async () => {
     return await $fetch(`${baseUrl}/api/reservoirs`, {
-      headers: { 'Authorization': `Bearer ${token.value}` },
+      headers: { Authorization: `Bearer ${token.value}` },
     });
   };
 
   const create = async (data: any) => {
     return await $fetch(`${baseUrl}/api/reservoirs`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${token.value}` },
+      method: "POST",
+      headers: { Authorization: `Bearer ${token.value}` },
       body: data,
     });
   };
 
   const update = async (id: string, data: any) => {
     return await $fetch(`${baseUrl}/api/reservoirs/${id}`, {
-      method: 'PATCH',
-      headers: { 'Authorization': `Bearer ${token.value}` },
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token.value}` },
       body: data,
     });
   };
 
   const remove = async (id: string) => {
     await $fetch(`${baseUrl}/api/reservoirs/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token.value}` },
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token.value}` },
     });
   };
 
@@ -303,17 +320,18 @@ export const useReservoirs = () => {
 ```
 
 **✅ Après :**
+
 ```typescript
 // composables/useReservoirs.ts
 export const useReservoirs = () => {
   const edgeApi = useEdgeApi();
 
   const fetchAll = async () => {
-    return await edgeApi.get('reservoirs');
+    return await edgeApi.get("reservoirs");
   };
 
   const create = async (data: any) => {
-    return await edgeApi.post('reservoirs', data);
+    return await edgeApi.post("reservoirs", data);
   };
 
   const update = async (id: string, data: any) => {
@@ -350,11 +368,13 @@ grep -r "useAuthToken" frontend/
 ### Patterns à rechercher
 
 1. **URLs hardcodées**
+
    - `https://api.hydrosense.local`
    - `http://localhost:8000/api`
    - `config.public.apiBaseUrl + '/api'`
 
 2. **Headers d'authentification manuels**
+
    - `Authorization: Bearer ${token}`
    - `headers: { 'Authorization': ... }`
 
@@ -398,25 +418,25 @@ console.log(sessionStorage); // ❌ Ne doit PAS contenir de token
 const edgeApi = useEdgeApi();
 
 // GET
-const reservoirs = await edgeApi.get('reservoirs');
-console.log('✅ GET:', reservoirs);
+const reservoirs = await edgeApi.get("reservoirs");
+console.log("✅ GET:", reservoirs);
 
 // POST
-const newReservoir = await edgeApi.post('reservoirs', {
-  name: 'Test',
+const newReservoir = await edgeApi.post("reservoirs", {
+  name: "Test",
   capacity: 1000,
 });
-console.log('✅ POST:', newReservoir);
+console.log("✅ POST:", newReservoir);
 
 // PATCH
 const updated = await edgeApi.patch(`reservoirs/${newReservoir.id}`, {
   capacity: 2000,
 });
-console.log('✅ PATCH:', updated);
+console.log("✅ PATCH:", updated);
 
 // DELETE
 await edgeApi.delete(`reservoirs/${newReservoir.id}`);
-console.log('✅ DELETE: success');
+console.log("✅ DELETE: success");
 ```
 
 ## 📝 Checklist par fichier
@@ -425,14 +445,17 @@ Pour chaque fichier contenant des appels API :
 
 ```markdown
 - [ ] `app/composables/useReservoirs.ts`
+
   - [ ] Remplacer par `useEdgeApi`
   - [ ] Supprimer les headers d'auth
   - [ ] Tester les méthodes GET/POST/PATCH/DELETE
 
 - [ ] `app/composables/useMeasurements.ts`
+
   - [ ] Même process
 
 - [ ] `app/pages/dashboard.vue`
+
   - [ ] Vérifier les useFetch
   - [ ] Tester le chargement des données
 
@@ -450,14 +473,16 @@ Pour chaque fichier contenant des appels API :
 Le JWT doit être correctement stocké dans la session Better Auth.
 
 **Vérifier dans `[...path].ts` :**
+
 ```typescript
 const accessToken = (session.user as any).accessToken;
 ```
 
 Si le token n'est pas trouvé, adaptez selon votre config :
+
 ```typescript
-const accessToken = 
-  (session.user as any).accessToken || 
+const accessToken =
+  (session.user as any).accessToken ||
   (session.session as any).accessToken ||
   (session as any).accessToken;
 ```
@@ -467,6 +492,7 @@ const accessToken =
 Better Auth gère automatiquement le refresh du token JWT.
 
 **Pas besoin de :**
+
 - Implémenter un mécanisme de refresh manuel
 - Gérer l'expiration du token côté client
 - Stocker le refresh token
@@ -474,6 +500,7 @@ Better Auth gère automatiquement le refresh du token JWT.
 ### 3. CORS
 
 Le proxy edge élimine les problèmes CORS car :
+
 - Le browser appelle le même domaine (Nuxt)
 - Nuxt fait l'appel serveur-à-serveur vers Symfony
 - Pas de restriction same-origin
@@ -481,6 +508,7 @@ Le proxy edge élimine les problèmes CORS car :
 ### 4. Rate limiting
 
 Si vous avez du rate limiting :
+
 - Le limiter côté Nuxt edge (IP du serveur Nuxt)
 - OU côté Symfony (JWT user ID)
 - Ne PAS limiter par IP browser (tous passeront par Nuxt)

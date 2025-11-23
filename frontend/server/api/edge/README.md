@@ -17,6 +17,7 @@ server/api/edge/
 **Principe fondamental :** Le navigateur ne doit JAMAIS appeler directement le backend.
 
 Tout passe par ce proxy qui :
+
 1. ✅ Récupère la session Better Auth côté serveur
 2. ✅ Extrait le JWT access token
 3. ✅ Ajoute `Authorization: Bearer <jwt>` dans les headers
@@ -33,7 +34,7 @@ Tout passe par ce proxy qui :
 // const { data } = await useFetch('https://api.hydrosense.com/api/reservoirs');
 
 // ✅ FAIRE - Via le proxy edge
-const { data } = await useFetch('/api/edge/reservoirs');
+const { data } = await useFetch("/api/edge/reservoirs");
 </script>
 ```
 
@@ -80,11 +81,11 @@ runtimeConfig: {
 
 ## 🐛 Troubleshooting
 
-| Erreur | Cause | Solution |
-|--------|-------|----------|
-| 401 Unauthorized | Session expirée | Reconnecter l'utilisateur |
-| 500 API base URL not configured | `API_URL` manquante | Définir dans `.env` |
-| No access token | JWT introuvable | Vérifier config Better Auth |
+| Erreur                          | Cause               | Solution                    |
+| ------------------------------- | ------------------- | --------------------------- |
+| 401 Unauthorized                | Session expirée     | Reconnecter l'utilisateur   |
+| 500 API base URL not configured | `API_URL` manquante | Définir dans `.env`         |
+| No access token                 | JWT introuvable     | Vérifier config Better Auth |
 
 ## 🔧 Maintenance
 
@@ -95,9 +96,10 @@ Le JWT peut être stocké à différents endroits selon votre configuration Bett
 Dans `[...path].ts`, ligne ~75, adaptez si nécessaire :
 
 ```typescript
-const accessToken = (session.user as any).accessToken || 
-                   (session.session as any).accessToken ||
-                   (session as any).accessToken;
+const accessToken =
+  (session.user as any).accessToken ||
+  (session.session as any).accessToken ||
+  (session as any).accessToken;
 ```
 
 ### Ajouter des routes spécifiques

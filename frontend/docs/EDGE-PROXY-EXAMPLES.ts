@@ -1,6 +1,6 @@
 /**
  * Exemple d'utilisation du proxy Edge pour gérer les réservoirs
- * 
+ *
  * Ce fichier démontre comment utiliser le proxy edge dans un composant Vue
  */
 
