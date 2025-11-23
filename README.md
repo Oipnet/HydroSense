@@ -27,9 +27,20 @@ Le développement est organisé en 5 EPICs :
 
 ## 📝 Documentation
 
-- Backend : À venir
-- Frontend : À venir
-- Infrastructure : À venir
+### Backend
+- Voir `backend/README.md`
+- Documentation API : `backend/docs/`
+
+### Frontend
+- Voir `frontend/README.md`
+- **🛡️ Proxy Edge Sécurisé** : `frontend/EDGE-PROXY-README.md`
+  - Guide complet : `frontend/docs/EDGE-PROXY.md`
+  - Schéma du flux : `frontend/docs/EDGE-PROXY-FLOW.md`
+  - Exemples : `frontend/docs/EDGE-PROXY-EXAMPLES.ts`
+  - Migration : `frontend/docs/EDGE-PROXY-MIGRATION.md`
+
+### Infrastructure
+- Voir `infra/README.md`
 
 ## 🤝 Contribution
 
